@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project NyaAI — Preserve the Voice. Verify the Record.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F0EDEA;
+      --ink:   #111110;
+      --mid:   #3d3b38;
+      --rule:  #c0bcb8;
+      --accent: #c8b89a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 2rem 3rem;
+      position: sticky;
+      top: 0;
+      background: var(--cream);
+      z-index: 100;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+    nav.scrolled { border-color: var(--rule); }
+
+    .nav-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink);
+      line-height: 1.3;
+      transition: color 0.2s;
+    }
+    .nav-links a span { display: block; }
+    .nav-links a:hover { color: var(--mid); }
+
+    .nav-cta a {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      border-radius: 99px;
+      padding: 0.5rem 1.25rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta a:hover { background: var(--ink); color: var(--cream); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 5rem 3rem 0;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 4rem;
+      align-items: end;
+      max-width: 1400px;
+    }
+
+    .hero-content {
+      padding-bottom: 5rem;
+    }
+
+    .hero-image {
+      position: relative;
+      overflow: hidden;
+      max-height: 620px;
+      align-self: stretch;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: sepia(20%) contrast(1.05);
+    }
+
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to right, var(--cream) 0%, transparent 22%, transparent 78%, var(--cream) 100%),
+        linear-gradient(to top, var(--cream) 0%, transparent 30%);
+      pointer-events: none;
+    }
+
+    .hero-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3.2rem, 7vw, 6.5rem);
+      line-height: 1.05;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      max-width: 14ch;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--mid);
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 1.05rem;
+      color: var(--mid);
+      max-width: 52ch;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      margin-top: 3rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-outline {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      border-radius: 99px;
+      padding: 0.75rem 1.75rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { background: var(--ink); color: var(--cream); }
+
+    .btn-ghost {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--mid);
+    }
+
+    /* ── DIVIDER ── */
+    hr { border: none; border-top: 1px solid var(--rule); margin: 0 3rem; }
+
+    /* ── STATS STRIP ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      padding: 3.5rem 3rem;
+      gap: 2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.8rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-top: 0.4rem;
+    }
+
+    /* ── SECTION HEADINGS ── */
+    .section-tag {
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 1rem;
+    }
+
+    /* ── PROBLEM SECTION ── */
+    .problem {
+      padding: 6rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .problem h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .problem-body p {
+      color: var(--mid);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      margin-bottom: 1.25rem;
+    }
+
+    .problem-body p:last-child { margin-bottom: 0; }
+
+    /* ── CASE STUDY ── */
+    .case-study {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 6rem 3rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .case-study .section-tag { color: var(--accent); }
+
+    .case-study h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      max-width: 28ch;
+      margin-bottom: 3rem;
+    }
+
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .case-timeline { border-left: 1px solid #3a3a38; padding-left: 2rem; }
+
+    .case-step {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .case-step::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      position: absolute;
+      left: -2.42rem;
+      top: 0.45rem;
+    }
+
+    .case-step-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    .case-step p {
+      font-size: 0.9rem;
+      color: #a8a49e;
+      line-height: 1.7;
+    }
+
+    .case-step strong { color: var(--cream); font-weight: 500; }
+
+    .case-quote {
+      border-left: 2px solid var(--accent);
+      padding-left: 1.75rem;
+      margin-top: 1rem;
+    }
+
+    .case-quote blockquote {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.35rem;
+      line-height: 1.6;
+      color: var(--cream);
+    }
+
+    .case-quote cite {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    .case-verdict {
+      margin-top: 2.5rem;
+      padding: 1.5rem;
+      border: 1px solid #3a3a38;
+      border-radius: 4px;
+    }
+
+    .case-verdict-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #c97a6a;
+      margin-bottom: 0.5rem;
+    }
+
+    .case-verdict p {
+      font-size: 0.88rem;
+      color: #a8a49e;
+      line-height: 1.7;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      padding: 6rem 3rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .how-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-bottom: 5rem;
+      align-items: end;
+    }
+
+    .how h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .how-intro {
+      font-size: 0.95rem;
+      color: var(--mid);
+      line-height: 1.8;
+    }
+
+    .how-principle {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--mid);
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+      border: 1px solid var(--rule);
+    }
+
+    .step {
+      padding: 2.5rem 2rem;
+      border-right: 1px solid var(--rule);
+    }
+    .step:last-child { border-right: none; }
+
+    .step-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--rule);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+    }
+
+    .step h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 0.75rem;
+    }
+
+    .step p {
+      font-size: 0.85rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    /* ── TECH SECTION ── */
+    .tech {
+      padding: 6rem 3rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .tech h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .pill {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--rule);
+      border-radius: 99px;
+      padding: 0.35rem 0.9rem;
+      color: var(--mid);
+    }
+
+    .tech-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .tech-item h4 {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .tech-item p {
+      font-size: 0.85rem;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .footer-tagline {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--mid);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--mid);
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── FADE-IN ANIMATION ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 4rem 1.5rem 0; grid-template-columns: 1fr; gap: 2rem; }
+      .hero-content { padding-bottom: 2rem; }
+      .hero-image { max-height: 300px; }
+      .stats, .problem, .case-grid, .how-header, .tech-grid { 
+        grid-template-columns: 1fr; 
+        gap: 2rem;
+      }
+      .problem, .case-study, .how, .tech { padding: 4rem 1.5rem; }
+      .steps { grid-template-columns: 1fr; }
+      .step { border-right: none; border-bottom: 1px solid var(--rule); }
+      .step:last-child { border-bottom: none; }
+      hr { margin: 0 1.5rem; }
+      .tech-items { grid-template-columns: 1fr; }
+      footer { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">Project NyaAI</a>
+    <ul class="nav-links">
+      <li>
+        <a href="#problem">
+          <span>The Problem</span>
+          <span>Case Study</span>
+        </a>
+      </li>
+      <li>
+        <a href="#how">
+          <span>How It Works</span>
+          <span>Architecture</span>
+        </a>
+      </li>
+      <li>
+        <a href="#tech">
+          <span>Technology</span>
+          <span>Stack</span>
+        </a>
+      </li>
+    </ul>
+    <div class="nav-cta">
+      <a href="https://github.com/PrinceJha-Qua/Project-NyaAI" target="_blank">View on GitHub</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero fade-up">
+    <div class="hero-content">
+      <p class="hero-label">Project NyaAI — Language Infrastructure</p>
+      <h1>Preserve the Voice.<br><em>Verify the Record.</em></h1>
+      <p class="hero-sub">An auditable, dialect-preserving evidence layer for public institutions. We bridge the gap between vernacular speech and the structured digital legal record.</p>
+      <div class="hero-actions">
+        <a href="#how" class="btn-outline">See How It Works</a>
+        <a href="#problem" class="btn-ghost">Read the Problem →</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="lady_justice.jpg" alt="Lady Justice statue holding scales and sword" />
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- STATS STRIP -->
+  <div class="stats fade-up">
+    <div>
+      <div class="stat-num">40M+</div>
+      <div class="stat-label">Rajasthani dialect speakers in India</div>
+    </div>
+    <div>
+      <div class="stat-num">154h</div>
+      <div class="stat-label">Hours of open-source Marwari speech data</div>
+    </div>
+    <div>
+      <div class="stat-num">&gt;35%</div>
+      <div class="stat-label">Zero-shot Word Error Rate on dialect audio</div>
+    </div>
+    <div>
+      <div class="stat-num">0</div>
+      <div class="stat-label">Existing auditable dialect intake tools</div>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section class="problem" id="problem">
+    <div class="fade-up">
+      <p class="section-tag">§ The Problem</p>
+      <h2>The injustice of unverifiable translation.</h2>
+    </div>
+    <div class="problem-body fade-up">
+      <p>Under India's legal framework (BNSS §173, §180, §313), citizen statements must be recorded and read back to the informant before they sign them. On paper, the protection exists.</p>
+      <p>In practice, the workflow is entirely human and fundamentally lossy. When a citizen speaks in a low-resource regional dialect — Marwari, Dhundhari, Bagri — the intake officer mentally translates and types the statement in standard Hindi or English.</p>
+      <p>What is lost: the original dialect vocabulary, culturally specific idioms, critical semantic nuances. And with them, the digital audit trail of what was actually said. The voice exists. The problem is that <em>no one preserved it.</em></p>
+    </div>
+  </section>
+
+  <!-- CASE STUDY -->
+  <section class="case-study" id="case">
+    <div class="fade-up">
+      <p class="section-tag">§ Real-Life Case Study</p>
+      <h2>The FIR Translation Gap.</h2>
+    </div>
+    <div class="case-grid fade-up">
+      <div class="case-timeline">
+        <div class="case-step">
+          <div class="case-step-label">Step 01 — Complaint</div>
+          <p>A rural farmer from the Marwar district arrives at a police station to report a property encroachment. He speaks only colloquial <strong>Marwari</strong>.</p>
+        </div>
+        <div class="case-step">
+          <div class="case-step-label">Step 02 — Intake</div>
+          <p>The intake officer, without formal dialect training, listens and types the FIR in standard Hindi. The dialect-specific word for a traditional land boundary — <strong><em>Merh</em></strong> — has no direct Hindi equivalent.</p>
+        </div>
+        <div class="case-step">
+          <div class="case-step-label">Step 03 — The Error</div>
+          <p>The officer writes <strong>Deewar</strong> (a generic wall). The FIR is signed. The original audio of the farmer's words is never recorded or structured.</p>
+        </div>
+        <div class="case-step">
+          <div class="case-step-label">Step 04 — Consequence</div>
+          <p>Months later in trial, the defense argues the FIR (which says "wall") does not match the physical land record. The victim's true testimony is unrecoverable.</p>
+        </div>
+        <div class="case-verdict">
+          <div class="case-verdict-tag">⚠ Outcome</div>
+          <p>Because no auditable link exists between the original spoken testimony and the written record, the case collapses on a translation error, not a lack of evidence.</p>
+        </div>
+      </div>
+      <div>
+        <div class="case-quote">
+          <blockquote>"The problem isn't that the legal system lacks a mechanism for interpretation. The problem is that the mechanism is un-auditable."</blockquote>
+          <cite>— Core Design Premise, Sakshya-Vani</cite>
+        </div>
+        <div style="margin-top: 2.5rem;">
+          <p class="case-step-label" style="color: #a8a49e; margin-bottom: 0.75rem;">Cited Context</p>
+          <p style="font-size: 0.85rem; color: #6b6860; line-height: 1.8;">The Supreme Court of India has emphasized that the ability to understand and be understood in one's own language is an existential right. Studies across Indian police stations reveal a systemic lack of institutional framework for linguistic support at the point of intake, particularly for dialects outside the 8th Schedule.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="how-header fade-up">
+      <div>
+        <p class="section-tag">§ How It Works</p>
+        <h2>Dialect preserved. Record verified.</h2>
+      </div>
+      <div>
+        <p class="how-intro">Sakshya-Vani is not a translation app. It is an evidence-preservation layer. The original audio is always the ground truth. The AI only proposes. The human verifies. Every step is logged.</p>
+        <p class="how-principle">"AI proposes. Human verifies. Original audio remains authoritative."</p>
+      </div>
+    </div>
+
+    <div class="steps fade-up">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Immutable Capture</h3>
+        <p>The citizen speaks. The raw audio is instantly cryptographically hashed (SHA-256), creating a tamper-evident chain of custody record.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Dialect Transcription</h3>
+        <p>A fine-tuned ASR model generates a verbatim Devanagari transcript in the native dialect — preserving exact vocabulary, idioms, and phonetics.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Linked Translation</h3>
+        <p>A Machine Translation model proposes a standard Hindi translation. Both transcripts coexist — neither replaces the other.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>Dual-Pane Verification</h3>
+        <p>The frontline worker clicks any Hindi sentence. The corresponding 5-second audio clip plays instantly. Errors are corrected before the record is finalized.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">05</div>
+        <h3>Audit Trail Export</h3>
+        <p>The system exports a structured package: original audio, dialect transcript, Hindi translation, correction log, timestamps, and hash verification.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGY -->
+  <section class="tech" id="tech">
+    <div class="tech-grid">
+      <div class="fade-up">
+        <p class="section-tag">§ Technology</p>
+        <h2>Built for accuracy. Engineered for the field.</h2>
+      </div>
+      <div class="fade-up">
+        <div class="tech-pills">
+          <span class="pill">IndicWhisper</span>
+          <span class="pill">IndicTrans2</span>
+          <span class="pill">LoRA / QLoRA</span>
+          <span class="pill">Silero VAD</span>
+          <span class="pill">FastAPI</span>
+          <span class="pill">Next.js</span>
+          <span class="pill">Docker</span>
+          <span class="pill">SHA-256</span>
+          <span class="pill">ULCA Compliant</span>
+        </div>
+        <div class="tech-items">
+          <div class="tech-item">
+            <h4>Acoustic Adaptation</h4>
+            <p>Parameter-Efficient Fine-Tuning (QLoRA) on Whisper/Conformer architectures, trained with SpecAugment to handle rural field noise and unstandardized phonology.</p>
+          </div>
+          <div class="tech-item">
+            <h4>Meaning-Critical Evaluation</h4>
+            <p>Beyond WER, we evaluate models on a custom Meaning-Critical Error Rate (MCER) — measuring how often the AI alters legally significant semantic meaning.</p>
+          </div>
+          <div class="tech-item">
+            <h4>Dialect Preservation Score</h4>
+            <p>A composite metric measuring survival of local idioms, named entities, and negations from source audio through the final transcript.</p>
+          </div>
+          <div class="tech-item">
+            <h4>ULCA-Ready Packaging</h4>
+            <p>API endpoints containerized via Docker, formatted to the Universal Language Contribution API schemas for seamless national-scale deployment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Project NyaAI</div>
+    <div class="footer-tagline">Preserve the Voice. Verify the Record.</div>
+    <ul class="footer-links">
+      <li><a href="#problem">Problem</a></li>
+      <li><a href="#how">Architecture</a></li>
+      <li><a href="#tech">Technology</a></li>
+      <li><a href="https://github.com/PrinceJha-Qua/Project-NyaAI" target="_blank">GitHub</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Sticky nav border
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // Intersection Observer for fade-up
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+      }),
+      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+    );
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

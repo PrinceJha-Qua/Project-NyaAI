@@ -1,0 +1,2822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Instagram Reel Insights - Native Android Pixel-Level Replica</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+        @font-face {
+      font-family: "Roboto";
+      src: url("fonts/roboto-light.ttf") format("truetype");
+      font-weight: 300;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Roboto";
+      src: url("fonts/roboto-regular.ttf") format("truetype");
+      font-weight: 400;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Roboto";
+      src: url("fonts/roboto-medium.ttf") format("truetype");
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Roboto";
+      src: url("fonts/roboto-bold.ttf") format("truetype");
+      font-weight: 600 700;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: "Roboto";
+      src: url("fonts/roboto-black.ttf") format("truetype");
+      font-weight: 900;
+      font-style: normal;
+    }
+    
+    :root {
+      --bg-main: #0c0f14;
+      --bg-card: #25282d;
+      --bg-circle: #25282d;
+      --track-bg: #25282d;
+      --text-primary: #ffffff;
+      --text-secondary: #9fa2aa;
+      --border-subtle: #25282d;
+      --accent-pink: #ff35fd;
+      --accent-purple: #7638fd;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100% !important;
+      text-size-adjust: 100% !important;
+      background-color: #0c0f14;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Editable styling when Edit Mode is active */
+    body.edit-mode .editable:hover {
+      outline: 1px dashed rgba(255, 53, 253, 0.8) !important;
+      outline-offset: 2px !important;
+      cursor: text !important;
+    }
+    body.edit-mode .editable:focus {
+      outline: 2px solid #ff35fd !important;
+      outline-offset: 2px !important;
+      background-color: rgba(255, 53, 253, 0.15) !important;
+      border-radius: 4px !important;
+    }
+
+    /* When preview mode / not in edit mode, completely hide editing cues */
+    body:not(.edit-mode) .editable {
+      outline: none !important;
+    }
+    body:not(.edit-mode) .edit-badge {
+      display: none !important;
+    }
+
+    /* Clean custom scrollbar */
+    .custom-scroll::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
+    #scrollContainer {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    #scrollContainer::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="text-white min-h-screen m-0 p-0 bg-[#0c0f14] select-text overflow-hidden edit-mode">
+
+<!-- Native Instagram SVG Icon Definitions (Refined Optical Proportions & Stroke Weight) -->
+<svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+  <defs>
+    <!-- Authentic Native Instagram Heart (Like) -->
+    <symbol id="icon-like" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </symbol>
+    
+    <!-- Authentic Native Instagram Speech Bubble (Comment) -->
+    <symbol id="icon-comment" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" d="M20.656 17.008a9.993 9.993 0 1 0-3.59 3.615L22 22Z"/>
+    </symbol>
+    
+    <!-- Authentic Native Instagram 2-Arrow Loop (Repost) -->
+    <symbol id="icon-repost" viewBox="0 0 24 24">
+      <path fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" d="M 4.5 13.5 V 7 C 4.5 5.5 5.8 4.2 7.3 4.2 H 18"/>
+      <polyline fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" points="14.5 1.5 18.5 4.5 14.5 7.5"/>
+      <path fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" d="M 19.5 10.5 V 17 C 19.5 18.5 18.2 19.8 16.7 19.8 H 6"/>
+      <polyline fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" points="9.5 22.5 5.5 19.5 9.5 16.5"/>
+    </symbol>
+    
+    <!-- Authentic Native Instagram Direct Paper Plane / Kite (Share) - Exact Pixel Reference Geometry -->
+    <symbol id="icon-share" viewBox="0 0 24 24">
+      <path d="M 2.8 3 H 21.2 L 12 21.8 L 8.1 12.4 L 2.8 5.8 Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="17.2" y1="5.1" x2="8.1" y2="12.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    
+    <!-- Authentic Native Instagram Bookmark Ribbon (Save) - Exact Reference Geometry -->
+    <symbol id="icon-save" viewBox="0 0 24 24">
+      <polygon points="19.5 21.2, 12.0 14.5, 4.5 21.2, 4.5 2.8, 19.5 2.8, 19.5 21.2" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    
+    <!-- Authentic Native Instagram Dashed Clock (Skip rate) -->
+    <symbol id="icon-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.85" stroke-dasharray="2 3.5" fill="none" stroke-linecap="round"/>
+      <path d="M12 7.5V12h3.5" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" fill="none"/>
+    </symbol>
+    
+    <!-- Info (i) icon used across section headings -->
+    <symbol id="icon-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.85" fill="none"/>
+      <line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="1.85" stroke-linecap="round"/>
+      <line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+  <!-- Top Studio Floating Toolbar -->
+  <header id="studioToolbar" class="hidden mb-4 flex flex-wrap gap-2.5 items-center bg-[#15171e] border border-[#272b36] px-4 py-2 rounded-full shadow-2xl text-xs z-50">
+    <div class="flex items-center gap-2">
+      <span class="w-2.5 h-2.5 rounded-full bg-[#ff35fd] animate-pulse"></span>
+      <span class="text-neutral-200 font-semibold tracking-normal">Instagram Android Studio</span>
+    </div>
+    <div class="h-4 w-px bg-neutral-700"></div>
+    <button onclick="toggleEditMode()" id="toolbarEditToggleBtn" class="bg-[#ff35fd] hover:bg-[#e02fe0] text-white font-semibold px-3 py-1 rounded-full transition flex items-center gap-1.5 shadow">
+      <span>✏️ Edit Mode: <strong id="toolbarModeText">ON</strong></span>
+    </button>
+    <button onclick="toggleActionMenu()" class="bg-[#24272e] hover:bg-[#2e323b] text-neutral-200 font-medium px-3 py-1 rounded-full transition flex items-center gap-1.5 border border-neutral-700">
+      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+      <span>Open 3-Dots Menu</span>
+    </button>
+    <button onclick="document.getElementById('videoThumbInput').click()" class="bg-[#24272e] hover:bg-[#2e323b] text-neutral-200 font-medium px-3 py-1 rounded-full transition flex items-center gap-1.5 border border-neutral-700">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <span>Change Reel Video/Thumbnail</span>
+    </button>
+    <input type="file" id="videoThumbInput" accept="image/*,video/*" class="hidden">
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- APP ROOT: Authentic Android Device Frame                                  -->
+  <!-- ========================================================================= -->
+  <div id="phoneFrame" class="w-full h-screen min-h-screen bg-[#0c0f14] text-white overflow-hidden flex flex-col relative select-none pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
+
+    <!-- Header Bar (Fixed Top, Exact Vertical Centering & Margins) -->
+    <div class="shrink-0 bg-[#0c0f14] z-30 px-4 py-2.5 flex items-center justify-between border-b border-transparent">
+      <div class="flex items-center gap-4">
+        <button class="text-white hover:opacity-80 transition p-0.5 flex items-center justify-center">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </button>
+        <div class="flex items-center gap-2 cursor-pointer" onclick="handleHeaderTitleClick()" title="Tap to open Studio Controls">
+          <h1 class="text-[20px] font-bold tracking-tight editable select-text" contenteditable="true">Reel insights</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-white">
+        <!-- Trend graph icon -->
+        <svg id="trendIconHeader" class="w-6 h-6 cursor-pointer hover:opacity-80 transition" onclick="toggleActionMenu()" fill="none" stroke="currentColor" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M3 17l6-6 4 4 8-8"/>
+          <path d="M14 7h7v7"/>
+        </svg>
+        <!-- Vertical 3-dots: Triggers Edit Mode & Action Sheet -->
+        <button id="threeDotsBtn" onclick="toggleActionMenu()" class="text-white hover:opacity-80 transition p-1 cursor-pointer flex items-center justify-center" title="Click to enter Edit Mode or modify graphs">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="5" r="1.6"/>
+            <circle cx="12" cy="12" r="1.6"/>
+            <circle cx="12" cy="19" r="1.6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+
+    <!-- 3. Scrollable Page Content Container (Takes remaining height, flex-1 min-h-0) -->
+    <div id="scrollContainer" class="flex-1 min-h-0 overflow-y-auto custom-scroll relative bg-[#0c0f14]">
+
+      <!-- Reel Video Preview (Exact 336px wide at 720px viewport, 2:3 aspect ratio, rounded corners) -->
+      <div class="flex flex-col items-center justify-center pt-2 pb-3">
+        <div class="relative w-[336px] max-w-[46.7%] aspect-[336/501] rounded-[18px] overflow-hidden shadow-xl border border-neutral-800/80 bg-[#16181e] cursor-pointer group" onclick="openReelLinkModal()" title="Click to fetch from Reel link or customize thumbnail">
+          <img id="mainVideoThumb" src="reel_thumbnail.png" alt="Reel thumbnail" class="w-full h-full object-cover">
+
+        </div>
+      </div>
+
+      <!-- Five Action Icons & Counts (Optically Weighted Dimensions, Exact Reference Sizing) -->
+      <div class="grid grid-cols-5 text-center px-4 py-2 select-text mb-3">
+        <div class="flex flex-col items-center gap-2">
+          <div class="h-6 w-full flex items-center justify-center text-white">
+            <svg class="w-[22px] h-[20px]"><use href="#icon-like"/></svg>
+          </div>
+          <span id="metricLikesCount" class="text-[13px] font-medium text-white editable" contenteditable="true">34</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="h-6 w-full flex items-center justify-center text-white">
+            <svg class="w-[21px] h-[21px]"><use href="#icon-comment"/></svg>
+          </div>
+          <span id="metricCommentsCount" class="text-[13px] font-medium text-white editable" contenteditable="true">0</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="h-6 w-full flex items-center justify-center text-white">
+            <svg class="w-[18px] h-[22px]"><use href="#icon-repost"/></svg>
+          </div>
+          <span id="metricRepostsCount" class="text-[13px] font-medium text-white editable" contenteditable="true">0</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="h-6 w-full flex items-center justify-center text-white">
+            <svg class="w-[22px] h-[20px]"><use href="#icon-share"/></svg>
+          </div>
+          <span id="metricSharesCount" class="text-[13px] font-medium text-white editable" contenteditable="true">0</span>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <div class="h-6 w-full flex items-center justify-center text-white">
+            <svg class="w-[18px] h-[20px]"><use href="#icon-save"/></svg>
+          </div>
+          <span id="metricSavesCount" class="text-[13px] font-medium text-white editable" contenteditable="true">1</span>
+        </div>
+      </div>
+
+
+
+      <!-- Tab Navigation Bar: STICKY AT TOP OF SCROLL, BELOW THUMBNAIL IN DOM -->
+      <div id="tabBar" class="relative sticky top-0 bg-[#0c0f14] z-20 select-none">
+        <div class="flex justify-around items-center text-[15px] font-semibold">
+          <button onclick="switchTab(0)" id="tabBtn-0" class="py-2.5 text-white transition-colors duration-200 flex-1 text-center">
+            Overview
+          </button>
+          <button onclick="switchTab(1)" id="tabBtn-1" class="py-2.5 text-[#9fa2aa] transition-colors duration-200 flex-1 text-center">
+            Engagement
+          </button>
+          <button onclick="switchTab(2)" id="tabBtn-2" class="py-2.5 text-[#9fa2aa] transition-colors duration-200 flex-1 text-center">
+            Audience
+          </button>
+        </div>
+
+        <!-- Animated Floating Underline Indicator (Glides smoothly between tabs!) -->
+        <div id="tabIndicatorTrack" class="absolute bottom-0 left-0 w-1/3 flex justify-center transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none">
+          <div id="tabIndicatorBar" class="rounded-full" style="height: 2.5px; width: 80px; background-color: #ffffff;"></div>
+        </div>
+      </div>
+
+      <!-- Tab Content Area: Instant switch between panes, NO carousel/page animation -->
+      <div class="px-4 pt-5 pb-12 select-text">
+
+        <!-- ============================================================== -->
+        <!-- PANE 0: OVERVIEW TAB CONTENT                                   -->
+        <!-- ============================================================== -->
+        <div id="tabPane-0" class="tab-pane space-y-7">
+
+          <!-- Summary Section (2x2 Grid Cards, Charcoal #25282d, 12px Gutter) -->
+          <div>
+            <div class="flex items-center gap-1.5 mb-3.5">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Summary</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-[#25282d] rounded-[16px] p-4 flex flex-col justify-between h-[86px]">
+                <span class="text-[13px] text-[#9fa2aa] font-normal editable" contenteditable="true">Views</span>
+                <span id="summaryViewsCount" class="text-[21px] font-bold leading-tight editable" contenteditable="true">3,629</span>
+              </div>
+              <div class="bg-[#25282d] rounded-[16px] p-4 flex flex-col justify-between h-[86px]">
+                <span class="text-[13px] text-[#9fa2aa] font-normal editable" contenteditable="true">Viewers</span>
+                <span id="summaryViewersCount" class="text-[21px] font-bold leading-tight editable" contenteditable="true">1,698</span>
+              </div>
+              <div class="bg-[#25282d] rounded-[16px] p-4 flex flex-col justify-between h-[86px]">
+                <span class="text-[13px] text-[#9fa2aa] font-normal editable" contenteditable="true">Average watch time</span>
+                <span id="summaryWatchTime" class="text-[21px] font-bold leading-tight editable" contenteditable="true">17s</span>
+              </div>
+              <div class="bg-[#25282d] rounded-[16px] p-4 flex flex-col justify-between h-[86px]">
+                <span class="text-[13px] text-[#9fa2aa] font-normal editable" contenteditable="true">Follows</span>
+                <span id="summaryFollows" class="text-[21px] font-bold leading-tight editable" contenteditable="true">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Views over time Section (Interactive Graph) -->
+          <div id="viewsChartSection" class="relative group">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Views over time</h2>
+                <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+              </div>
+
+            </div>
+            <!-- Filter Pills -->
+            <div class="flex gap-2 text-[13px] font-medium mb-5 select-none">
+              <button onclick="switchViewsFilter('all')" id="viewsFilter-all" class="bg-[#24272e] text-white px-4 py-1.5 rounded-full transition">All</button>
+              <button onclick="switchViewsFilter('followers')" id="viewsFilter-followers" class="border border-[#343740] text-white px-4 py-1.5 rounded-full transition">Followers</button>
+              <button onclick="switchViewsFilter('nonfollowers')" id="viewsFilter-nonfollowers" class="border border-[#343740] text-white px-4 py-1.5 rounded-full transition">Non-followers</button>
+            </div>
+            <!-- Views Line Chart Canvas -->
+            <div onclick="openGraphEditor('views')" class="relative w-full h-[180px] pt-2 cursor-pointer" title="Click to edit curve">
+              <div class="absolute inset-0 flex flex-col justify-between text-[11px] text-[#9fa2aa] pointer-events-none">
+                <div class="flex items-center w-full">
+                  <span class="w-6 editable" contenteditable="true">4K</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-2"></div>
+                </div>
+                <div class="flex items-center w-full">
+                  <span class="w-6 editable" contenteditable="true">2K</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-2"></div>
+                </div>
+                <div class="flex items-center w-full">
+                  <span class="w-6 editable" contenteditable="true">0</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-2"></div>
+                </div>
+              </div>
+              <div class="absolute inset-0 ml-8 mr-2 flex items-center">
+                <svg class="w-full h-[130px] overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <path id="typicalViewsLine" d="M 0 98 C 40 85, 120 48, 180 40 C 240 36, 270 35, 300 34" fill="none" stroke="#606674" stroke-width="2.5" stroke-dasharray="4 4" stroke-linecap="round" class="hidden transition-all duration-300"/>
+                  <path id="viewsChartLine" d="M 0 96 C 30 80, 120 22, 150 18 C 180 16, 250 15, 300 14" fill="none" stroke="#ff35fd" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" class="transition-all duration-300"/>
+                </svg>
+              </div>
+            </div>
+            <div class="flex justify-between text-[12px] text-[#9fa2aa] px-6 mt-2">
+              <span class="editable" contenteditable="true">Nov 18</span>
+              <span class="editable" contenteditable="true">Nov 19</span>
+              <span class="editable" contenteditable="true">Nov 20</span>
+            </div>
+          </div>
+
+          <!-- What impacts your views Section -->
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">What impacts your views</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+            <p class="text-[13px] text-[#9fa2aa] mt-1 mb-4 font-normal editable" contenteditable="true">Rates are listed in order of importance to reach.</p>
+            <div class="space-y-4">
+              <!-- 1. Skip rate -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-11 h-11 rounded-full bg-[#25282d] flex items-center justify-center text-white shrink-0">
+                    <svg class="w-5 h-5"><use href="#icon-clock"/></svg>
+                  </div>
+                  <span class="text-[15px] font-normal editable" contenteditable="true">Skip rate</span>
+                </div>
+                <div class="flex flex-col items-end text-right">
+                  <span class="text-[16px] font-bold leading-tight editable" contenteditable="true">14.5%</span>
+                  <span class="text-[12px] text-[#9fa2aa] leading-tight mt-0.5 editable" contenteditable="true">Higher</span>
+                </div>
+              </div>
+              <!-- 2. Share rate -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-11 h-11 rounded-full bg-[#25282d] flex items-center justify-center text-white shrink-0">
+                    <svg class="w-5 h-5"><use href="#icon-share"/></svg>
+                  </div>
+                  <span class="text-[15px] font-normal editable" contenteditable="true">Share rate</span>
+                </div>
+                <div class="flex flex-col items-end text-right">
+                  <span class="text-[16px] font-bold leading-tight editable" contenteditable="true">0.0%</span>
+                  <span class="text-[12px] text-[#9fa2aa] leading-tight mt-0.5 editable" contenteditable="true">Lower</span>
+                </div>
+              </div>
+              <!-- 3. Like rate -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-11 h-11 rounded-full bg-[#25282d] flex items-center justify-center text-white shrink-0">
+                    <svg class="w-5 h-5"><use href="#icon-like"/></svg>
+                  </div>
+                  <span class="text-[15px] font-normal editable" contenteditable="true">Like rate</span>
+                </div>
+                <div class="flex flex-col items-end text-right">
+                  <span class="text-[16px] font-bold leading-tight editable" contenteditable="true">2.1%</span>
+                  <span class="text-[12px] text-[#9fa2aa] leading-tight mt-0.5 editable" contenteditable="true">Lower</span>
+                </div>
+              </div>
+              <!-- 4. Save rate -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-11 h-11 rounded-full bg-[#25282d] flex items-center justify-center text-white shrink-0">
+                    <svg class="w-5 h-5"><use href="#icon-save"/></svg>
+                  </div>
+                  <span class="text-[15px] font-normal editable" contenteditable="true">Save rate</span>
+                </div>
+                <div class="flex flex-col items-end text-right">
+                  <span class="text-[16px] font-bold leading-tight editable" contenteditable="true">0.1%</span>
+                  <span class="text-[12px] text-[#9fa2aa] leading-tight mt-0.5 editable" contenteditable="true">Lower</span>
+                </div>
+              </div>
+              <!-- 5. Repost rate -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-11 h-11 rounded-full bg-[#25282d] flex items-center justify-center text-white shrink-0">
+                    <svg class="w-5 h-5"><use href="#icon-repost"/></svg>
+                  </div>
+                  <span class="text-[15px] font-normal editable" contenteditable="true">Repost rate</span>
+                </div>
+                <div class="flex flex-col items-end text-right">
+                  <span class="text-[16px] font-bold leading-tight editable" contenteditable="true">0.0%</span>
+                  <span class="text-[12px] text-[#9fa2aa] leading-tight mt-0.5 editable" contenteditable="true">Typical</span>
+                </div>
+              </div>
+              <!-- 6. Comment rate -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-11 h-11 rounded-full bg-[#25282d] flex items-center justify-center text-white shrink-0">
+                    <svg class="w-5 h-5"><use href="#icon-comment"/></svg>
+                  </div>
+                  <span class="text-[15px] font-normal editable" contenteditable="true">Comment rate</span>
+                </div>
+                <div class="flex flex-col items-end text-right">
+                  <span class="text-[16px] font-bold leading-tight editable" contenteditable="true">0.0%</span>
+                  <span class="text-[12px] text-[#9fa2aa] leading-tight mt-0.5 editable" contenteditable="true">Typical</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- How long people watched your reel (Retention Curve) -->
+          <div id="retentionChartSection" class="relative group">
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">How long people watched your reel</h2>
+                <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+              </div>
+
+            </div>
+            <div class="flex justify-center mb-4">
+              <div class="relative w-[104px] h-[172px] rounded-lg overflow-hidden shadow-md border border-neutral-800/80 bg-[#16181e] cursor-pointer group" onclick="openReelLinkModal()" title="Click to fetch / optimize thumbnail">
+                <img id="miniVideoThumb" src="mini_thumbnail.png" alt="Mini thumbnail" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                  <svg class="w-8 h-8 text-white/90 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+            </div>
+            <div onclick="openGraphEditor('retention')" class="relative w-full h-[155px] cursor-pointer" title="Click to edit curve">
+              <div class="absolute inset-0 flex flex-col justify-between text-[11px] text-[#9fa2aa] pointer-events-none">
+                <div class="flex items-center w-full">
+                  <span class="w-8 editable" contenteditable="true">100%</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-1"></div>
+                </div>
+                <div class="flex items-center w-full">
+                  <span class="w-8 editable" contenteditable="true">50%</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-1"></div>
+                </div>
+                <div class="flex items-center w-full">
+                  <span class="w-8 editable" contenteditable="true">0%</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-1"></div>
+                </div>
+              </div>
+              <div class="absolute inset-0 ml-10 mr-2 flex items-center">
+                <svg class="w-full h-[120px] overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <path id="typicalRetentionLine" d="M 0 12 C 30 45, 90 70, 150 78 C 210 84, 260 88, 300 90" fill="none" stroke="#606674" stroke-width="2.5" stroke-dasharray="4 4" stroke-linecap="round" class="hidden transition-all duration-300"/>
+                  <path id="retentionChartLine" d="M 0.0,0.3 C 1.3,0.6 5.3,1.5 7.9,2.3 C 10.5,3.1 13.2,4.3 15.8,5.3 C 18.4,6.3 21.1,7.2 23.7,8.3 C 26.3,9.4 29.0,9.8 31.6,12.0 C 34.2,14.2 36.9,17.5 39.5,21.3 C 42.1,25.1 44.8,31.3 47.4,35.0 C 50.0,38.7 52.7,41.6 55.3,43.7 C 57.9,45.8 60.6,46.7 63.2,47.7 C 65.8,48.8 68.5,49.4 71.1,50.0 C 73.7,50.6 76.3,50.8 78.9,51.3 C 81.5,51.8 84.2,52.4 86.8,53.0 C 89.4,53.6 92.1,54.2 94.7,54.7 C 97.3,55.2 100.0,55.9 102.6,56.3 C 105.2,56.7 107.9,56.5 110.5,57.0 C 113.1,57.5 115.8,58.5 118.4,59.0 C 121.0,59.5 123.7,59.2 126.3,59.7 C 128.9,60.2 131.6,61.2 134.2,62.0 C 136.8,62.8 139.5,63.7 142.1,64.3 C 144.7,64.9 147.4,65.3 150.0,65.7 C 152.6,66.1 155.3,66.5 157.9,66.7 C 160.5,66.9 163.2,66.7 165.8,67.0 C 168.4,67.3 171.1,67.6 173.7,68.3 C 176.3,69.0 179.0,70.1 181.6,71.0 C 184.2,71.9 186.9,73.2 189.5,73.7 C 192.1,74.2 194.8,74.1 197.4,74.3 C 200.0,74.5 202.7,74.8 205.3,75.0 C 207.9,75.2 210.6,75.5 213.2,75.7 C 215.8,75.9 218.5,76.2 221.1,76.3 C 223.7,76.4 226.3,76.2 228.9,76.3 C 231.5,76.4 234.2,76.8 236.8,77.0 C 239.4,77.2 242.1,77.6 244.7,77.7 C 247.3,77.8 250.0,77.6 252.6,77.7 C 255.2,77.8 257.9,78.0 260.5,78.3 C 263.1,78.6 265.8,79.2 268.4,79.7 C 271.0,80.2 273.7,80.8 276.3,81.0 C 278.9,81.2 281.6,81.0 284.2,81.0 C 286.8,81.0 289.5,80.9 292.1,81.0 C 294.7,81.1 298.7,81.6 300.0,81.7" fill="none" stroke="#ff35fd" stroke-width="3.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+            <div class="flex justify-between text-[12px] text-[#9fa2aa] px-10 mt-1">
+              <span class="editable" contenteditable="true">0:00</span>
+              <span class="editable" contenteditable="true">0:31</span>
+            </div>
+          </div>
+
+          <!-- Top Sources of Views Section -->
+          <div id="sourcesSection">
+            <div class="flex items-center gap-1.5 mb-4">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Top sources of views</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+            <p class="text-[13px] text-[#9fa2aa] -mt-2 mb-4 font-normal editable" contenteditable="true">Where people saw your reel.</p>
+            <div class="space-y-4 text-[14px]">
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">Reels tab</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-src-reels" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 63.9%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-src-reels">63.9%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">Profile</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-src-profile" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 26.8%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-src-profile">26.8%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">Explore</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-src-explore" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 3.6%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-src-explore">3.6%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- PANE 1: ENGAGEMENT TAB CONTENT                                 -->
+        <!-- ============================================================== -->
+        <div id="tabPane-1" class="tab-pane space-y-7 hidden">
+
+          <!-- Actions after viewing -->
+          <div>
+            <div class="flex items-center gap-1.5 mb-3.5">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Actions after viewing</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Profile visits</span>
+                <span class="font-bold editable" contenteditable="true">1</span>
+              </div>
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Follows</span>
+                <span class="font-bold editable" contenteditable="true">0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactions -->
+          <div>
+            <div class="flex items-center gap-1.5 mb-3.5">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Interactions</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Likes</span>
+                <span id="interactionsLikesCount" class="font-bold editable" contenteditable="true">34</span>
+              </div>
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Comments</span>
+                <span id="interactionsCommentsCount" class="font-bold editable" contenteditable="true">0</span>
+              </div>
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Reposts</span>
+                <span id="interactionsRepostsCount" class="font-bold editable" contenteditable="true">0</span>
+              </div>
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Shares</span>
+                <span id="interactionsSharesCount" class="font-bold editable" contenteditable="true">0</span>
+              </div>
+              <div class="flex justify-between items-center text-[15px]">
+                <span class="font-normal text-white editable" contenteditable="true">Saves</span>
+                <span id="interactionsSavesCount" class="font-bold editable" contenteditable="true">1</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- When people liked your reel (Interactive Likes Curve) -->
+          <div id="likesChartSection" class="relative group">
+            <div class="flex items-center justify-between mb-3.5">
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">When people liked your reel</h2>
+                <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+              </div>
+
+            </div>
+
+            <!-- Mini Thumbnail with Play overlay -->
+            <div class="flex justify-center mb-4">
+              <div class="relative w-[104px] h-[172px] rounded-lg overflow-hidden shadow-md border border-neutral-800/80 bg-[#16181e] cursor-pointer group" onclick="openReelLinkModal()" title="Click to fetch / optimize thumbnail">
+                <img id="miniVideoThumb" src="mini_thumbnail.png" alt="Mini thumbnail" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none">
+                  <svg class="w-8 h-8 text-white/90 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Accurate Likes Distribution Curve -->
+            <div onclick="openGraphEditor('likes')" class="relative w-full h-[155px] cursor-pointer" title="Click to edit curve">
+              <div class="absolute inset-0 flex flex-col justify-between text-[11px] text-[#9fa2aa] pointer-events-none">
+                <div class="flex items-center w-full">
+                  <span class="w-8 editable" contenteditable="true">30%</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-1"></div>
+                </div>
+                <div class="flex items-center w-full">
+                  <span class="w-8 editable" contenteditable="true">15%</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-1"></div>
+                </div>
+                <div class="flex items-center w-full">
+                  <span class="w-8 editable" contenteditable="true">0%</span>
+                  <div class="flex-1 h-px bg-[#1c1f24] ml-1"></div>
+                </div>
+              </div>
+
+              <div class="absolute inset-0 ml-10 mr-2 flex items-center">
+                <svg class="w-full h-[120px] overflow-visible" viewBox="0 0 300 100" preserveAspectRatio="none">
+                  <path id="likesChartLine" d="M 0.0,52.8 C 1.6,46.0 6.5,16.9 9.7,12.0 C 12.9,7.1 16.2,9.3 19.4,23.1 C 22.6,36.9 25.8,82.6 29.0,94.8 C 32.2,96.0 35.5,96.0 38.7,96.0 C 41.9,92.9 45.2,81.5 48.4,76.2 C 51.6,70.9 54.9,64.5 58.1,64.3 C 61.3,64.1 64.5,69.7 67.7,75.0 C 70.9,80.3 74.2,92.5 77.4,96.0 C 80.6,96.0 83.9,96.0 87.1,96.0 C 90.3,94.5 93.6,86.9 96.8,86.9 C 100.0,86.9 103.3,94.5 106.5,96.0 L 125.8,96.0 C 129.0,94.9 132.3,90.4 135.5,89.3 C 138.7,88.2 142.0,88.2 145.2,89.3 C 148.4,90.4 151.6,94.9 154.8,96.0 L 280.6,96.0 C 283.8,88.1 287.1,58.6 290.3,48.8 C 293.5,39.0 298.4,39.0 300.0,37.0" fill="none" stroke="#ff35fd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="flex justify-between text-[12px] text-[#9fa2aa] px-10 mt-1">
+              <span class="editable" contenteditable="true">0:00</span>
+              <span class="editable" contenteditable="true">0:31</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- PANE 2: AUDIENCE TAB CONTENT                                   -->
+        <!-- ============================================================== -->
+        <div id="tabPane-2" class="tab-pane space-y-7 hidden">
+
+          <!-- Who viewed your reel -->
+          <div>
+            <div class="flex items-center gap-1.5 mb-4">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Who viewed your reel</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+
+            <div class="space-y-4 text-[14px]">
+              <!-- Followers -->
+              <div>
+                <div class="text-white mb-1.5 font-normal editable" contenteditable="true">Followers</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-followers" class="h-full bg-[#7638fd] rounded-full transition-all duration-300" style="width: 0%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-followers">0.0%</span>
+                </div>
+              </div>
+
+              <!-- Non-followers -->
+              <div>
+                <div class="text-white mb-1.5 font-normal editable" contenteditable="true">Non-followers</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-nonfollowers" class="h-full bg-[#7638fd] rounded-full transition-all duration-300" style="width: 100%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-nonfollowers">100.0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audience details with ALL THREE functioning selectors: Age | Country | Gender -->
+          <div>
+            <div class="flex items-center gap-1.5 mb-4">
+              <h2 class="text-[17px] font-bold text-white tracking-tight editable" contenteditable="true">Audience details</h2>
+              <svg class="w-4 h-4 text-neutral-400"><use href="#icon-info"/></svg>
+            </div>
+
+            <!-- Sub-pills: Age | Country | Gender -->
+            <div class="flex gap-2 text-[13px] font-medium mb-5 select-none">
+              <button onclick="switchAudienceSubTab('age')" id="audSubBtn-age" class="bg-[#24272e] text-white px-5 py-2 rounded-full transition">Age</button>
+              <button onclick="switchAudienceSubTab('country')" id="audSubBtn-country" class="border border-[#343740] text-white px-5 py-2 rounded-full transition">Country</button>
+              <button onclick="switchAudienceSubTab('gender')" id="audSubBtn-gender" class="border border-[#343740] text-white px-5 py-2 rounded-full transition">Gender</button>
+            </div>
+
+            <!-- 1. AGE BREAKDOWN BARS -->
+            <div id="audSubContent-age" class="space-y-4 text-[14px]">
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">13-17</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-13" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 3.3%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-13">3.3%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">18-24</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-18" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 59.6%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-18">59.6%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">25-34</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-25" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 29.5%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-25">29.5%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">35-44</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-35" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 5.6%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-35">5.6%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">45-54</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-45" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 1.4%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-45">1.4%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">55-64</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-55" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 0.5%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-55">0.5%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">65+</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-age-65" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 0.1%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-age-65">0.1%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. COUNTRY BREAKDOWN BARS (Exact Screen 9 Reference + Add Country Capability) -->
+            <div id="audSubContent-country" class="space-y-4 text-[14px] hidden">
+              <div id="countryListContainer" class="space-y-4">
+                <div class="country-row group" data-country-id="country-us">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-white country-name editable" contenteditable="true">United States</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                      <div id="bar-country-us" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 35.7%;"></div>
+                    </div>
+                    <span class="w-14 text-right font-bold country-val editable shrink-0" contenteditable="true" data-progress-target="bar-country-us">35.7%</span>
+                  </div>
+                </div>
+
+                <div class="country-row group" data-country-id="country-br">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-white country-name editable" contenteditable="true">Brazil</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                      <div id="bar-country-br" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 26.4%;"></div>
+                    </div>
+                    <span class="w-14 text-right font-bold country-val editable shrink-0" contenteditable="true" data-progress-target="bar-country-br">26.4%</span>
+                  </div>
+                </div>
+
+                <div class="country-row group" data-country-id="country-in">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-white country-name editable" contenteditable="true">India</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                      <div id="bar-country-in" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 8.1%;"></div>
+                    </div>
+                    <span class="w-14 text-right font-bold country-val editable shrink-0" contenteditable="true" data-progress-target="bar-country-in">8.1%</span>
+                  </div>
+                </div>
+
+                <div class="country-row group" data-country-id="country-ca">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-white country-name editable" contenteditable="true">Canada</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                      <div id="bar-country-ca" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 5.4%;"></div>
+                    </div>
+                    <span class="w-14 text-right font-bold country-val editable shrink-0" contenteditable="true" data-progress-target="bar-country-ca">5.4%</span>
+                  </div>
+                </div>
+
+                <div class="country-row group" data-country-id="country-uk">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-white country-name editable" contenteditable="true">United Kingdom</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                      <div id="bar-country-uk" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 2.9%;"></div>
+                    </div>
+                    <span class="w-14 text-right font-bold country-val editable shrink-0" contenteditable="true" data-progress-target="bar-country-uk">2.9%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Button to Add Country -->
+              <button onclick="promptAddNewCountry()" class="w-full py-2.5 rounded-xl border border-dashed border-[#ff35fd]/50 hover:border-[#ff35fd] text-[#ff35fd] hover:bg-[#ff35fd]/10 font-semibold text-[13px] flex items-center justify-center gap-1.5 transition cursor-pointer mt-2 shadow-sm">
+                <span>➕ Add Country</span>
+              </button>
+            </div>
+
+            <!-- 3. GENDER BREAKDOWN BARS (Exact Screen 10 / User Screenshot 5 Reference) -->
+            <div id="audSubContent-gender" class="space-y-4 text-[14px] hidden">
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">Men</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-gender-men" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: 91.6%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-gender-men">91.6%</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-white mb-1 editable" contenteditable="true">Women</div>
+                <div class="flex items-center gap-3">
+                  <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+                    <div id="bar-gender-women" class="h-full bg-[#7638fd] rounded-full transition-all duration-300" style="width: 8.4%;"></div>
+                  </div>
+                  <span class="w-14 text-right font-bold editable shrink-0" contenteditable="true" data-progress-target="bar-gender-women">8.4%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======!-- ===================================================================== -->
+    <!-- 3-DOTS ACTION SHEET / STUDIO CONTROLS MODAL                           -->
+    <!-- ===================================================================== -->
+    <div id="actionMenuModal" class="absolute inset-0 z-40 bg-black/75 backdrop-blur-xs flex flex-col justify-end hidden transition-all duration-300">
+      <div class="bg-[#1a1d24] border-t border-[#2e3340] rounded-t-[28px] p-5 space-y-4 shadow-2xl animate-in slide-in-from-bottom duration-200">
+        <!-- Drag bar -->
+        <div class="w-10 h-1 bg-neutral-600 rounded-full mx-auto mb-1"></div>
+        <div class="flex justify-between items-center pb-2 border-b border-[#2e3340]">
+          <div>
+            <h3 class="text-[17px] font-bold text-white tracking-tight">Studio & Edit Controls</h3>
+            <p class="text-[12px] text-neutral-400">Edit any metric, label, date, or graph</p>
+          </div>
+          <button onclick="toggleActionMenu()" class="text-neutral-400 hover:text-white p-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Fetch Reel Data via Link Button -->
+        <button onclick="toggleActionMenu(); openReelLinkModal();" class="w-full text-left bg-gradient-to-r from-[#d946ef]/20 to-[#8b5cf6]/20 hover:from-[#d946ef]/30 hover:to-[#8b5cf6]/30 p-3.5 rounded-2xl flex items-center justify-between text-white transition border border-[#d946ef]/40 cursor-pointer shadow-lg">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#d946ef]/20 text-[#d946ef] flex items-center justify-center font-bold text-lg">
+              🔗
+            </div>
+            <div>
+              <div class="font-bold text-white text-[15px]">Fetch Reel via Link</div>
+              <div class="text-[12px] text-neutral-400">Auto-import thumbnail, metrics & optimize ratio</div>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-[#d946ef]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        <!-- Master Edit Mode Switch -->
+        <div onclick="toggleEditMode()" class="bg-[#242730] hover:bg-[#2b303c] p-3.5 rounded-2xl flex items-center justify-between cursor-pointer border border-[#3b4150] transition">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#ff35fd]/20 text-[#ff35fd] flex items-center justify-center font-bold text-lg">
+              ✏️
+            </div>
+            <div>
+              <div class="font-bold text-white text-[15px]">Edit Mode</div>
+              <div class="text-[12px] text-neutral-400">Click any text or graph to edit</div>
+            </div>
+          </div>
+          <div id="menuEditModeBadge" class="bg-[#ff35fd] text-white font-bold px-3 py-1 rounded-full text-[12px]">
+            ACTIVE
+          </div>
+        </div>
+
+        <!-- Hidden Elements & Clean Screenshot Button -->
+        <button onclick="toggleActionMenu(); openHiddenElementsModal();" class="w-full text-left bg-[#242730] hover:bg-[#2b303c] p-3.5 rounded-2xl flex items-center justify-between text-white transition border border-[#3b4150] cursor-pointer shadow-md">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-lg">
+              👁️
+            </div>
+            <div>
+              <div class="font-bold text-white text-[15px]">Hidden Elements & Screenshot</div>
+              <div class="text-[12px] text-neutral-400">Toggle 3-dots, typical curve, or clean mode</div>
+            </div>
+          </div>
+          <svg class="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        <!-- Monetization Ad Panel Toggle Button -->
+        <button onclick="toggleActionMenu(); toggleAdPanel(!isAdPanelVisible);" class="w-full text-left bg-[#242730] hover:bg-[#2b303c] p-3.5 rounded-2xl flex items-center justify-between text-white transition border border-[#3b4150] cursor-pointer shadow-md">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg">
+              💰
+            </div>
+            <div>
+              <div class="font-bold text-white text-[15px]">Monetization Ad Banner</div>
+              <div class="text-[12px] text-neutral-400">Toggle mobile sponsor banner at bottom</div>
+            </div>
+          </div>
+          <div id="adPanelStatusBadge" class="bg-neutral-700 text-neutral-300 font-bold px-2.5 py-1 rounded-full text-[11px]">
+            OFF
+          </div>
+        </button>
+
+        <!-- Direct Graph Edit Shortcuts -->
+        <div class="space-y-2">
+          <div class="text-[12px] font-bold uppercase tracking-wider text-neutral-400 px-1">Interactive Graph Editors</div>
+          <button onclick="toggleActionMenu(); openGraphEditor('views');" class="w-full text-left bg-[#242730] hover:bg-[#2d323e] p-3 rounded-xl flex items-center justify-between text-white transition border border-neutral-800">
+            <div class="flex items-center gap-2.5">
+              <span class="text-pink-400">📈</span>
+              <span class="font-medium text-[14px]">Edit "Views over time" Graph</span>
+            </div>
+            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+
+          <button onclick="toggleActionMenu(); openGraphEditor('retention');" class="w-full text-left bg-[#242730] hover:bg-[#2d323e] p-3 rounded-xl flex items-center justify-between text-white transition border border-neutral-800">
+            <div class="flex items-center gap-2.5">
+              <span class="text-purple-400">⏱️</span>
+              <span class="font-medium text-[14px]">Edit Retention Graph (Watched Time)</span>
+            </div>
+            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+
+          <button onclick="toggleActionMenu(); openGraphEditor('likes');" class="w-full text-left bg-[#242730] hover:bg-[#2d323e] p-3 rounded-xl flex items-center justify-between text-white transition border border-neutral-800">
+            <div class="flex items-center gap-2.5">
+              <span class="text-red-400">❤️</span>
+              <span class="font-medium text-[14px]">Edit Likes Graph ("When people liked...")</span>
+            </div>
+            <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Reel Thumbnail Uploader -->
+        <button onclick="document.getElementById('videoThumbInput').click(); toggleActionMenu();" class="w-full text-left bg-[#242730] hover:bg-[#2d323e] p-3 rounded-xl flex items-center justify-between text-white transition border border-neutral-800">
+          <div class="flex items-center gap-2.5">
+            <span class="text-emerald-400">🖼️</span>
+            <span class="font-medium text-[14px]">Change Reel Video / Thumbnail</span>
+          </div>
+          <svg class="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        <!-- Reset Button -->
+        <button onclick="resetAllData(); toggleActionMenu();" class="w-full text-left bg-[#242730] hover:bg-[#2d323e] p-3 rounded-xl flex items-center justify-between text-neutral-300 transition border border-neutral-800">
+          <div class="flex items-center gap-2.5">
+            <span class="text-amber-400">🔄</span>
+            <span class="font-medium text-[14px]">Reset All to Initial Values</span>
+          </div>
+          <span class="text-[12px] text-neutral-500">Restore</span>
+        </button>
+
+        <!-- Close Button -->
+        <button onclick="toggleActionMenu()" class="w-full py-2.5 text-center text-neutral-400 hover:text-white font-medium text-[14px]">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- INTERACTIVE GRAPH EDITOR MODAL (Matches User's Reference Screenshot)  -->
+    <!-- ===================================================================== -->
+    <div id="graphEditorModal" class="absolute inset-0 z-50 bg-[#0c0f14] flex flex-col hidden select-none transition-all duration-300">
+
+      <!-- Modal Header -->
+      <div class="shrink-0 px-4 py-3 flex items-center justify-between border-b border-[#1f232b] bg-[#12141a]">
+        <div class="flex items-center gap-3">
+          <button onclick="closeGraphEditor()" class="text-neutral-400 hover:text-white transition p-1 cursor-pointer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+          <div>
+            <h2 id="editorTitle" class="text-[16px] font-bold leading-tight text-white truncate max-w-[180px]">Edit "When Peopl...</h2>
+            <p id="editorSubtitle" class="text-[11px] text-[#9fa2aa] leading-tight">Drag points to shape curv...</p>
+          </div>
+        </div>
+        <button onclick="saveGraphCurve()" class="bg-[#d946ef] hover:bg-[#c026d3] text-white font-bold px-4 py-1.5 rounded-full text-[13px] transition flex items-center gap-1.5 shadow-lg shadow-purple-900/30 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          <span>Save Curve</span>
+        </button>
+      </div>
+
+      <!-- Editor Content Scrollable Container -->
+      <div class="flex-1 overflow-y-auto px-4 py-3 space-y-3.5 custom-scroll pb-16">
+
+        <!-- Top Control Card -->
+        <div class="bg-[#181b22] border border-[#272b36] rounded-[20px] p-4 space-y-4">
+          <!-- Row 1: Final Value % (Last Point) -->
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span id="finalMetricIcon" class="text-amber-400">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              </span>
+              <span id="finalMetricLabel" class="text-[14px] font-medium text-white">Final Likes % (Last Point)</span>
+            </div>
+            <input type="text" id="finalValInput" value="0%" class="w-20 bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-1 text-center font-bold text-white text-[15px] focus:outline-none focus:border-[#d946ef]">
+          </div>
+
+          <!-- Row 2: Points Stepper & Slider -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-blue-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </span>
+                <span class="text-[14px] font-medium text-white">Points: <span id="pointsCountLabel">9 / 30</span></span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="adjustPointsCount(-1)" class="w-8 h-8 rounded-lg bg-[#232730] hover:bg-[#2d323e] border border-[#3b4150] flex items-center justify-center text-white font-bold text-[16px] transition cursor-pointer">-</button>
+                <button onclick="adjustPointsCount(1)" class="w-8 h-8 rounded-lg bg-[#232730] hover:bg-[#2d323e] border border-[#3b4150] flex items-center justify-center text-white font-bold text-[16px] transition cursor-pointer">+</button>
+              </div>
+            </div>
+            <!-- Purple slider -->
+            <input type="range" id="pointsSlider" min="3" max="30" value="9" oninput="setPointsCount(this.value)" class="w-full accent-[#d946ef] bg-[#2a2e39] h-2 rounded-lg cursor-pointer">
+          </div>
+
+          <!-- Row 3: Line Length Slider & Presets -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2.5">
+                <span class="text-orange-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                </span>
+                <span class="text-[14px] font-medium text-white">Line Length: <span id="lineLengthLabel">100% (Full)</span></span>
+              </div>
+            </div>
+            <!-- Orange slider -->
+            <input type="range" id="lineLengthSlider" min="20" max="100" value="100" oninput="setLengthPreset(this.value)" class="w-full accent-[#f59e0b] bg-[#2a2e39] h-2 rounded-lg cursor-pointer mb-3">
+            
+            <!-- Preset Buttons (Exact 3+1 Layout from Reference Screenshot) -->
+            <div class="space-y-2 text-[13px] font-semibold">
+              <div class="grid grid-cols-3 gap-2">
+                <button onclick="setLengthPreset(100)" id="presetBtn-100" class="py-2 rounded-xl border border-[#ea580c] bg-[#12141a] text-white text-center transition cursor-pointer">100% Full</button>
+                <button onclick="setLengthPreset(75)" id="presetBtn-75" class="py-2 rounded-xl border border-[#2e3340] bg-[#12141a] text-neutral-300 text-center hover:bg-[#232730] transition cursor-pointer">75% Length</button>
+                <button onclick="setLengthPreset(50)" id="presetBtn-50" class="py-2 rounded-xl border border-[#2e3340] bg-[#12141a] text-neutral-300 text-center hover:bg-[#232730] transition cursor-pointer">50% Length</button>
+              </div>
+              <div class="w-1/3 pr-1">
+                <button onclick="setLengthPreset(25)" id="presetBtn-25" class="w-full py-2 rounded-xl border border-[#2e3340] bg-[#12141a] text-neutral-300 text-center hover:bg-[#232730] transition cursor-pointer">25% Length</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Graph Canvas Card -->
+        <div class="bg-[#181b22] border border-[#272b36] rounded-[20px] p-4 relative flex flex-col">
+          <!-- Canvas Container with Axes -->
+          <div class="relative w-full h-[220px]">
+            <!-- Y-Axis Labels & Gridlines -->
+            <div id="yAxisGrid" class="absolute inset-0 flex flex-col justify-between text-[11px] text-[#9fa2aa] pointer-events-none select-none">
+              <!-- Dynamically populated -->
+            </div>
+
+            <!-- SVG Drawing Canvas for Dragging -->
+            <div class="absolute inset-0 ml-7 mr-2">
+              <svg id="editorSvgCanvas" class="w-full h-full overflow-visible cursor-crosshair" viewBox="0 0 340 200" preserveAspectRatio="none">
+                <!-- Curve Path -->
+                <path id="editorCurvePath" d="" fill="none" stroke="#d946ef" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- Points and Indicators Group -->
+                <g id="editorPointsGroup"></g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- X-Axis Labels -->
+          <div id="xAxisLabels" class="flex justify-between text-[11px] text-[#9fa2aa] px-8 pt-2">
+            <span id="xLabelStart">0:00</span>
+            <span id="xLabelMid">0:15</span>
+            <span id="xLabelEnd">0:30</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Dragging Status Pill -->
+      <div class="shrink-0 pb-3 flex justify-center pointer-events-none">
+        <div id="dragStatusPill" class="bg-[#181b22] border border-[#272b36] px-4 py-1.5 rounded-full text-[12px] font-medium text-white shadow-xl flex items-center gap-2">
+          <span class="text-cyan-400">👆</span>
+          <span id="dragStatusText">Drag points to shape curve</span>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ===================================================================== -->
+    <!-- REEL LINK FETCHER & ASPECT RATIO OPTIMIZER MODAL                      -->
+    <!-- ===================================================================== -->
+    <div id="reelLinkModal" class="absolute inset-0 z-50 bg-[#0c0f14] flex flex-col hidden select-none transition-all duration-300">
+
+      <!-- Modal Header -->
+      <div class="shrink-0 px-4 py-3 flex items-center justify-between border-b border-[#1f232b] bg-[#12141a]">
+        <div class="flex items-center gap-3">
+          <button onclick="closeReelLinkModal()" class="text-neutral-400 hover:text-white transition p-1 cursor-pointer">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+          <div>
+            <h2 class="text-[16px] font-bold leading-tight text-white flex items-center gap-1.5">
+              <span>🔗 Fetch Reel via Link</span>
+            </h2>
+            <p class="text-[11px] text-[#9fa2aa] leading-tight">Auto-import metadata & optimize thumbnail ratio</p>
+          </div>
+        </div>
+        <button onclick="applyReelDataToInsights()" class="bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] hover:brightness-110 text-white font-bold px-4 py-1.5 rounded-full text-[13px] transition flex items-center gap-1.5 shadow-lg shadow-purple-900/30 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+          <span>Apply</span>
+        </button>
+      </div>
+
+      <!-- Scrollable Modal Body -->
+      <div class="flex-1 overflow-y-auto px-4 py-3.5 space-y-4 custom-scroll pb-20">
+
+        <!-- Card 1: Reel URL Input & Auto-Fetch -->
+        <div class="bg-[#181b22] border border-[#272b36] rounded-[20px] p-4 space-y-3 shadow-md">
+          <div class="flex items-center justify-between">
+            <label class="text-[13px] font-bold text-white flex items-center gap-1.5">
+              <span class="text-[#d946ef]">Instagram Reel URL</span>
+            </label>
+            <button onclick="pasteReelUrl()" class="text-[11px] font-semibold bg-[#262a34] hover:bg-[#303542] text-neutral-300 px-2.5 py-1 rounded-lg transition border border-neutral-700 cursor-pointer flex items-center gap-1">
+              <span>📋 Paste</span>
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <input type="url" id="reelLinkUrlInput" placeholder="https://www.instagram.com/reel/C-xyz123/..." class="flex-1 bg-[#12141a] border border-[#3b4150] rounded-xl px-3.5 py-2.5 text-white text-[13px] focus:outline-none focus:border-[#d946ef] transition placeholder-neutral-500">
+            <button onclick="fetchReelFromUrl()" id="btnFetchReel" class="bg-[#d946ef] hover:bg-[#c026d3] text-white font-bold px-4 py-2.5 rounded-xl text-[13px] transition flex items-center gap-1.5 shrink-0 cursor-pointer shadow-md">
+              <span id="fetchBtnSpinner" class="hidden animate-spin">⏳</span>
+              <span id="fetchBtnText">⚡ Fetch</span>
+            </button>
+          </div>
+          <div id="reelLinkStatus" class="text-[11px] text-neutral-400 leading-tight min-h-[16px]">
+            Paste any Instagram Reel link to automatically fetch thumbnail and engagement metrics.
+          </div>
+        </div>
+
+        <!-- Card 2: Thumbnail Aspect Ratio Optimizer & Live Preview -->
+        <div class="bg-[#181b22] border border-[#272b36] rounded-[20px] p-4 space-y-3.5 shadow-md">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-[14px] font-bold text-white flex items-center gap-1.5">
+                <span>✨ Aspect Ratio Optimizer</span>
+              </h3>
+              <p class="text-[11px] text-[#9fa2aa]">Auto-fits thumbnail to native Instagram card ratios</p>
+            </div>
+            <span class="text-[10px] font-bold bg-[#d946ef]/20 text-[#d946ef] border border-[#d946ef]/40 px-2 py-0.5 rounded-full">2:3 NATIVE</span>
+          </div>
+
+          <!-- Preset Ratio Buttons -->
+          <div>
+            <div class="text-[11px] font-semibold text-neutral-400 mb-2">TARGET RATIO</div>
+            <div class="grid grid-cols-4 gap-1.5 text-[11px] font-medium">
+              <button onclick="setAspectPreset('2:3')" id="btnRatio-2-3" class="bg-[#d946ef] text-white py-2 rounded-xl transition text-center font-bold shadow cursor-pointer">
+                2:3 Native
+              </button>
+              <button onclick="setAspectPreset('9:16')" id="btnRatio-9-16" class="bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-2 rounded-xl transition text-center border border-neutral-700 cursor-pointer">
+                9:16 Reel
+              </button>
+              <button onclick="setAspectPreset('4:5')" id="btnRatio-4-5" class="bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-2 rounded-xl transition text-center border border-neutral-700 cursor-pointer">
+                4:5 Feed
+              </button>
+              <button onclick="setAspectPreset('1:1')" id="btnRatio-1-1" class="bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-2 rounded-xl transition text-center border border-neutral-700 cursor-pointer">
+                1:1 Square
+              </button>
+            </div>
+          </div>
+
+          <!-- Alignment Controls -->
+          <div>
+            <div class="text-[11px] font-semibold text-neutral-400 mb-2">CROP ALIGNMENT</div>
+            <div class="grid grid-cols-3 gap-2 text-[11px] font-medium">
+              <button onclick="setCropAlign('top')" id="btnAlign-top" class="bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-1.5 rounded-lg transition text-center border border-neutral-700 cursor-pointer">
+                Top Focus
+              </button>
+              <button onclick="setCropAlign('center')" id="btnAlign-center" class="bg-[#d946ef] text-white py-1.5 rounded-lg transition text-center font-bold shadow cursor-pointer">
+                Center Focus
+              </button>
+              <button onclick="setCropAlign('bottom')" id="btnAlign-bottom" class="bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-1.5 rounded-lg transition text-center border border-neutral-700 cursor-pointer">
+                Bottom Focus
+              </button>
+            </div>
+          </div>
+
+          <!-- Live Dual Thumbnail Preview -->
+          <div class="bg-[#12141a] border border-[#272b36] rounded-xl p-3 flex items-center justify-around">
+            <!-- Main Preview Card -->
+            <div class="flex flex-col items-center gap-1.5">
+              <span class="text-[10px] font-semibold text-neutral-400">Main Card (2:3)</span>
+              <div class="relative w-[110px] h-[165px] rounded-[14px] overflow-hidden border border-neutral-700 shadow-md bg-neutral-900">
+                <img id="optMainPreviewImg" src="reel_thumbnail.png" alt="Main preview" class="w-full h-full object-cover">
+              </div>
+            </div>
+            <!-- Mini Retention Preview Card -->
+            <div class="flex flex-col items-center gap-1.5">
+              <span class="text-[10px] font-semibold text-neutral-400">Mini Graph (2:3)</span>
+              <div class="relative w-[70px] h-[105px] rounded-lg overflow-hidden border border-neutral-700 shadow-md bg-neutral-900">
+                <img id="optMiniPreviewImg" src="mini_thumbnail.png" alt="Mini preview" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center bg-black/25 pointer-events-none">
+                  <svg class="w-5 h-5 text-white/90" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Direct Image URL or File Upload Fallback -->
+          <div class="space-y-2 pt-1 border-t border-[#272b36]">
+            <div class="flex items-center justify-between">
+              <span class="text-[11px] font-semibold text-neutral-400">DIRECT IMAGE OR FILE</span>
+              <button onclick="document.getElementById('reelDeviceFileInput').click()" class="text-[11px] font-semibold bg-[#262a34] hover:bg-[#303542] text-neutral-200 px-3 py-1 rounded-lg transition border border-neutral-700 cursor-pointer flex items-center gap-1">
+                <span>📁 Pick from Gallery</span>
+              </button>
+              <input type="file" id="reelDeviceFileInput" accept="image/*" class="hidden" onchange="handleReelDeviceFileUpload(event)">
+            </div>
+            <input type="url" id="reelDirectImgUrl" onchange="handleDirectThumbUrl(this.value)" placeholder="Or paste direct image URL (jpg/png/webp)..." class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white text-[12px] focus:outline-none focus:border-[#d946ef] transition placeholder-neutral-500">
+          </div>
+        </div>
+
+        <!-- Card 3: Metrics & Numbers to Import -->
+        <div class="bg-[#181b22] border border-[#272b36] rounded-[20px] p-4 space-y-3.5 shadow-md">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[14px] font-bold text-white flex items-center gap-1.5">
+              <span>📊 Engagement & Performance Numbers</span>
+            </h3>
+            <span class="text-[11px] text-neutral-400">Editable</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-[13px]">
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Likes Count</label>
+              <input type="text" id="reelInputLikes" value="34" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Comments Count</label>
+              <input type="text" id="reelInputComments" value="0" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Reposts Count</label>
+              <input type="text" id="reelInputReposts" value="0" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Shares Count</label>
+              <input type="text" id="reelInputShares" value="0" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Saves Count</label>
+              <input type="text" id="reelInputSaves" value="1" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Total Views</label>
+              <input type="text" id="reelInputViews" value="3,629" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Unique Viewers</label>
+              <input type="text" id="reelInputViewers" value="1,698" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+            <div>
+              <label class="text-[11px] text-[#9fa2aa] block mb-1">Average Watch Time</label>
+              <input type="text" id="reelInputWatchTime" value="17s" class="w-full bg-[#12141a] border border-[#3b4150] rounded-xl px-3 py-2 text-white font-bold text-[14px] focus:outline-none focus:border-[#d946ef]">
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Card 4: Top Audience Countries Editor -->
+        <div class="bg-[#181b22] border border-[#272b36] rounded-[20px] p-4 space-y-3.5 shadow-md">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-[14px] font-bold text-white flex items-center gap-1.5">
+                <span>🌍 Top Countries Breakdown</span>
+              </h3>
+              <p class="text-[11px] text-[#9fa2aa]">Add, edit, or remove audience countries</p>
+            </div>
+            <button onclick="addModalCountryRow()" class="text-[11px] font-bold bg-[#ff35fd]/20 hover:bg-[#ff35fd]/30 text-[#ff35fd] border border-[#ff35fd]/40 px-3 py-1 rounded-full transition cursor-pointer flex items-center gap-1">
+              <span>➕ Add Country</span>
+            </button>
+          </div>
+          <div id="modalCountryList" class="space-y-2">
+            <!-- Dynamic rows populated in openReelLinkModal() -->
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-2 pt-2">
+          <button onclick="applyReelDataToInsights()" class="w-full bg-gradient-to-r from-[#d946ef] to-[#8b5cf6] hover:brightness-110 text-white font-bold py-3.5 rounded-2xl text-[15px] transition flex items-center justify-center gap-2 shadow-xl shadow-purple-900/40 cursor-pointer">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            <span>Apply to Reel Insights</span>
+          </button>
+          <button onclick="closeReelLinkModal()" class="w-full py-2.5 text-center text-neutral-400 hover:text-white font-medium text-[13px] cursor-pointer">
+            Cancel
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Toast Notification for Confirmations -->
+    <div id="toastNotification" class="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-[#181b22] border border-[#ff35fd]/40 text-white px-4 py-2 rounded-full text-[13px] font-semibold shadow-2xl flex items-center gap-2 transition-all duration-300 opacity-0 pointer-events-none">
+      <span class="text-emerald-400">✓</span>
+      <span id="toastText">Curve saved successfully!</span>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Functionality & Engine -->
+  <script>
+    // Tab switching
+    let currentTabIndex = 0;
+    const tabIndicatorTrack = document.getElementById('tabIndicatorTrack');
+
+    function switchTab(index, immediate = false) {
+      currentTabIndex = index;
+
+      if (immediate) {
+        tabIndicatorTrack.style.transition = 'none';
+      }
+
+      tabIndicatorTrack.style.transform = 'translateX(' + (index * 100) + '%)';
+
+      if (immediate) {
+        void tabIndicatorTrack.offsetHeight;
+        tabIndicatorTrack.style.transition = '';
+      }
+
+      for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById('tabBtn-' + i);
+        const pane = document.getElementById('tabPane-' + i);
+        if (i === index) {
+          btn.classList.remove('text-[#9fa2aa]');
+          btn.classList.add('text-white');
+          if (pane) pane.classList.remove('hidden');
+        } else {
+          btn.classList.remove('text-white');
+          btn.classList.add('text-[#9fa2aa]');
+          if (pane) pane.classList.add('hidden');
+        }
+      }
+    }
+
+    // Views Over Time Filter System (All | Followers | Non-followers)
+    const viewsCurves = {
+      all: "M 0 96 C 30 80, 120 22, 150 18 C 180 16, 250 15, 300 14",
+      followers: "M 0 98 C 60 98, 150 98, 300 98",
+      nonfollowers: "M 0 96 C 30 80, 120 22, 150 18 C 180 16, 250 15, 300 14"
+    };
+
+    function switchViewsFilter(filterKey) {
+      const filters = ['all', 'followers', 'nonfollowers'];
+      filters.forEach(f => {
+        const btn = document.getElementById('viewsFilter-' + f);
+        if (f === filterKey) {
+          btn.className = "bg-[#24272e] text-white px-4 py-1.5 rounded-full transition";
+        } else {
+          btn.className = "border border-[#343740] text-white px-4 py-1.5 rounded-full transition";
+        }
+      });
+
+      const chartLine = document.getElementById('viewsChartLine');
+      if (chartLine && viewsCurves[filterKey]) {
+        chartLine.setAttribute('d', viewsCurves[filterKey]);
+      }
+    }
+
+    // Audience Sub-tabs (Age, Country, Gender)
+    function switchAudienceSubTab(subTab) {
+      const subTabs = ['age', 'country', 'gender'];
+      subTabs.forEach(tab => {
+        const btn = document.getElementById('audSubBtn-' + tab);
+        const content = document.getElementById('audSubContent-' + tab);
+        if (tab === subTab) {
+          btn.className = "bg-[#24272e] text-white px-5 py-2 rounded-full transition";
+          content.classList.remove('hidden');
+        } else {
+          btn.className = "border border-[#343740] text-white px-5 py-2 rounded-full transition";
+          content.classList.add('hidden');
+        }
+      });
+    }
+
+    // Edit Mode State Management
+    let isEditMode = false; // Default ON so all elements are editable directly
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const headerChip = document.getElementById('headerEditChip');
+      const menuBadge = document.getElementById('menuEditModeBadge');
+      const toolbarText = document.getElementById('toolbarModeText');
+      const toolbarBtn = document.getElementById('toolbarEditToggleBtn');
+
+      if (isEditMode) {
+        document.body.classList.add('edit-mode');
+        if (headerChip) headerChip.classList.remove('hidden');
+        if (menuBadge) {
+          menuBadge.textContent = 'ACTIVE';
+          menuBadge.className = 'bg-[#ff35fd] text-white font-bold px-3 py-1 rounded-full text-[12px]';
+        }
+        if (toolbarText) toolbarText.textContent = 'ON';
+        if (toolbarBtn) toolbarBtn.className = 'bg-[#ff35fd] hover:bg-[#e02fe0] text-white font-semibold px-3 py-1 rounded-full transition flex items-center gap-1.5 shadow';
+        showToast('Edit Mode Enabled: Click any text or graph to edit!');
+      } else {
+        document.body.classList.remove('edit-mode');
+        if (headerChip) headerChip.classList.add('hidden');
+        if (menuBadge) {
+          menuBadge.textContent = 'OFF';
+          menuBadge.className = 'bg-neutral-700 text-neutral-300 font-bold px-3 py-1 rounded-full text-[12px]';
+        }
+        if (toolbarText) toolbarText.textContent = 'OFF';
+        if (toolbarBtn) toolbarBtn.className = 'bg-[#24272e] hover:bg-[#2d323e] text-neutral-300 font-semibold px-3 py-1 rounded-full transition flex items-center gap-1.5 border border-neutral-700';
+        showToast('Preview Mode: Edit outlines hidden for clean display.');
+      }
+    }
+
+    // 3-Dots Action Sheet Toggle
+    function toggleActionMenu() {
+      const menu = document.getElementById('actionMenuModal');
+      if (menu) {
+        menu.classList.toggle('hidden');
+      }
+    }
+
+    // Toast Notification Helper
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      const text = document.getElementById('toastText');
+      if (toast && text) {
+        text.textContent = msg;
+        toast.classList.remove('opacity-0', 'pointer-events-none');
+        toast.classList.add('opacity-100');
+        setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          toast.classList.add('opacity-0', 'pointer-events-none');
+        }, 2200);
+      }
+    }
+
+    // Custom Thumbnail / Media Uploader
+    const videoThumbInput = document.getElementById('videoThumbInput');
+    const mainVideoThumb = document.getElementById('mainVideoThumb');
+    videoThumbInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const imgUrl = event.target.result;
+          if (mainVideoThumb) mainVideoThumb.src = imgUrl;
+          showToast('Reel thumbnail updated!');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Live Percentage to Bar Width Auto-updater
+    document.querySelectorAll('[data-progress-target]').forEach(el => {
+      el.addEventListener('input', () => {
+        const raw = el.textContent.replace('%', '').trim();
+        const val = parseFloat(raw);
+        if (!isNaN(val)) {
+          const targetId = el.getAttribute('data-progress-target');
+          const bar = document.getElementById(targetId);
+          if (bar) {
+            bar.style.width = Math.min(Math.max(val, 0), 100) + '%';
+          }
+        }
+      });
+    });
+
+    // =========================================================================
+    // INTERACTIVE GRAPH EDITOR ENGINE (Exact Replica of User Reference)
+    // =========================================================================
+    let currentEditorGraph = 'likes'; // 'likes' | 'retention' | 'views'
+    let editorPoints = [];
+    let activePointIdx = 4;
+    let lineLengthPct = 100;
+    let isDraggingNode = false;
+
+    // Presets for each graph type
+    const graphConfigs = {
+      likes: {
+        title: 'Edit "When People Liked Your Reel"',
+        subtitle: 'Drag points to shape curve...',
+        finalMetricLabel: 'Final Likes % (Last Point)',
+        finalMetricIcon: '<svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
+        yLabels: ['20%', '15%', '10%', '5%', '0%'],
+        maxY: 20,
+        xLabels: ['0:00', '0:15', '0:30'],
+        defaultPoints: [
+          { x: 0.05, y: 0.15 },
+          { x: 0.15, y: 0.45 },
+          { x: 0.25, y: 0.38 },
+          { x: 0.36, y: 0.30 },
+          { x: 0.48, y: 0.48 },
+          { x: 0.60, y: 0.25 },
+          { x: 0.72, y: 0.45 },
+          { x: 0.85, y: 0.08 },
+          { x: 0.95, y: 0.22 }
+        ],
+        targetSvgId: 'likesChartLine',
+        targetBox: { w: 300, h: 100 }
+      },
+      retention: {
+        title: 'Edit "How Long People Watched"',
+        subtitle: 'Drag points to shape retention curve...',
+        finalMetricLabel: 'Final Retention % (Last Point)',
+        finalMetricIcon: '<svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" stroke-dasharray="2 3.5" stroke-width="2"/><path d="M12 7.5V12h3.5" stroke-width="2.2"/></svg>',
+        yLabels: ['100%', '75%', '50%', '25%', '0%'],
+        maxY: 100,
+        xLabels: ['0:00', '0:15', '0:31'],
+        defaultPoints: [
+          { x: 0.02, y: 0.98 },
+          { x: 0.15, y: 0.72 },
+          { x: 0.30, y: 0.52 },
+          { x: 0.45, y: 0.42 },
+          { x: 0.60, y: 0.34 },
+          { x: 0.75, y: 0.27 },
+          { x: 0.88, y: 0.22 },
+          { x: 0.98, y: 0.18 }
+        ],
+        targetSvgId: 'retentionChartLine',
+        targetBox: { w: 300, h: 100 }
+      },
+      views: {
+        title: 'Edit "Views Over Time"',
+        subtitle: 'Drag points to shape views curve...',
+        finalMetricLabel: 'Final Views (Last Point)',
+        finalMetricIcon: '<svg class="w-5 h-5 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>',
+        yLabels: ['4K', '3K', '2K', '1K', '0'],
+        maxY: 4000,
+        xLabels: ['Nov 18', 'Nov 19', 'Nov 20'],
+        defaultPoints: [
+          { x: 0.02, y: 0.05 },
+          { x: 0.18, y: 0.35 },
+          { x: 0.35, y: 0.68 },
+          { x: 0.50, y: 0.88 },
+          { x: 0.68, y: 0.91 },
+          { x: 0.85, y: 0.92 },
+          { x: 0.98, y: 0.93 }
+        ],
+        targetSvgId: 'viewsChartLine',
+        targetBox: { w: 300, h: 100 }
+      }
+    };
+
+    function openGraphEditor(type) {
+      currentEditorGraph = type;
+      const cfg = graphConfigs[type];
+      if (!cfg) return;
+
+      document.getElementById('editorTitle').textContent = cfg.title;
+      document.getElementById('editorSubtitle').textContent = cfg.subtitle;
+      document.getElementById('finalMetricLabel').textContent = cfg.finalMetricLabel;
+      document.getElementById('finalMetricIcon').innerHTML = cfg.finalMetricIcon;
+
+      // Populate Y-Axis Grid
+      const grid = document.getElementById('yAxisGrid');
+      grid.innerHTML = cfg.yLabels.map(lbl => `
+        <div class="flex items-center w-full">
+          <span class="w-6 text-right">${lbl}</span>
+          <div class="flex-1 h-px bg-[#26282d] ml-2"></div>
+        </div>
+      `).join('');
+
+      // Populate X-Axis Labels
+      document.getElementById('xLabelStart').textContent = cfg.xLabels[0];
+      document.getElementById('xLabelMid').textContent = cfg.xLabels[1];
+      document.getElementById('xLabelEnd').textContent = cfg.xLabels[2];
+
+      // Clone default points
+      editorPoints = JSON.parse(JSON.stringify(cfg.defaultPoints));
+      activePointIdx = Math.min(4, editorPoints.length - 1);
+      lineLengthPct = 100;
+      setLengthPreset(100);
+
+      document.getElementById('graphEditorModal').classList.remove('hidden');
+      renderEditorCanvas();
+    }
+
+    function closeGraphEditor() {
+      document.getElementById('graphEditorModal').classList.add('hidden');
+    }
+
+    // Catmull-Rom to Cubic Bezier Path calculation
+    function catmullRomToBezierPath(pts) {
+      if (pts.length < 2) return '';
+      let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+      const n = pts.length;
+      for (let i = 0; i < n - 1; i++) {
+        const p0 = pts[Math.max(0, i - 1)];
+        const p1 = pts[i];
+        const p2 = pts[i + 1];
+        const p3 = pts[Math.min(n - 1, i + 2)];
+
+        const tension = 0.25;
+        const c1x = p1.x + (p2.x - p0.x) * tension;
+        const c1y = p1.y + (p2.y - p0.y) * tension;
+        const c2x = p2.x - (p3.x - p1.x) * tension;
+        const c2y = p2.y - (p3.y - p1.y) * tension;
+
+        d += ` C ${c1x.toFixed(1)},${c1y.toFixed(1)} ${c2x.toFixed(1)},${c2y.toFixed(1)} ${p2.x.toFixed(1)},${p2.y.toFixed(1)}`;
+      }
+      return d;
+    }
+
+    function renderEditorCanvas() {
+      const cfg = graphConfigs[currentEditorGraph];
+      const svgCanvas = document.getElementById('editorSvgCanvas');
+      const curvePath = document.getElementById('editorCurvePath');
+      const pointsGroup = document.getElementById('editorPointsGroup');
+      const pointsCountLabel = document.getElementById('pointsCountLabel');
+      const pointsSlider = document.getElementById('pointsSlider');
+      const lineLengthSlider = document.getElementById('lineLengthSlider');
+      const lineLengthLabel = document.getElementById('lineLengthLabel');
+      const finalValInput = document.getElementById('finalValInput');
+      const dragStatusText = document.getElementById('dragStatusText');
+
+      const W = 340;
+      const H = 220;
+      const effectiveW = W * (lineLengthPct / 100);
+
+      // Convert normalized (0..1) to canvas pixel points
+      const pixelPts = editorPoints.map((pt, idx) => {
+        const px = pt.x * effectiveW;
+        const py = H - (pt.y * H);
+        return { x: px, y: py, normX: pt.x, normY: pt.y, id: idx + 1 };
+      });
+
+      // Update Path
+      curvePath.setAttribute('d', catmullRomToBezierPath(pixelPts));
+
+      // Update Nodes
+      let groupHtml = '';
+      pixelPts.forEach((pt, idx) => {
+        const isSelected = (idx === activePointIdx);
+        const isLast = (idx === pixelPts.length - 1);
+        let valFormatted = (pt.normY * cfg.maxY).toFixed(1);
+        if (cfg.maxY > 100) valFormatted = Math.round(pt.normY * cfg.maxY).toLocaleString();
+
+        // Active node glowing halo & floating tooltip
+        if (isSelected) {
+          groupHtml += `
+            <circle cx="${pt.x}" cy="${pt.y}" r="15" fill="rgba(217, 70, 239, 0.25)" stroke="#d946ef" stroke-width="1.5" class="animate-pulse" />
+            <g transform="translate(${pt.x}, ${pt.y - 24})">
+              <rect x="-35" y="-14" width="70" height="20" rx="6" fill="#12141a" stroke="#3b82f6" stroke-width="1.5" />
+              <text x="0" y="0" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">0:15 • ${valFormatted}%</text>
+            </g>
+          `;
+        }
+
+        // Final node gold ring & badge
+        if (isLast) {
+          let lastFormatted = Math.round(pt.normY * cfg.maxY);
+          if (cfg.maxY <= 100) lastFormatted += '%';
+          groupHtml += `
+            <circle cx="${pt.x}" cy="${pt.y}" r="13" fill="none" stroke="#f59e0b" stroke-width="2" />
+            <g transform="translate(${pt.x}, ${pt.y - 18})">
+              <rect x="-16" y="-10" width="32" height="15" rx="4" fill="#181b22" stroke="#f59e0b" stroke-width="1" />
+              <text x="0" y="1" font-size="9" font-weight="bold" fill="#f59e0b" text-anchor="middle" dominant-baseline="middle">${lastFormatted}</text>
+            </g>
+          `;
+        }
+
+        // Visible node circle & number below
+        groupHtml += `
+          <circle cx="${pt.x}" cy="${pt.y}" r="6" fill="#ffffff" stroke="#d946ef" stroke-width="3" />
+          <text x="${pt.x}" y="${pt.y + 14}" font-size="10" font-weight="bold" fill="#9fa2aa" text-anchor="middle">${pt.id}</text>
+          <!-- Transparent larger hit circle for easy touch/mouse dragging -->
+          <circle cx="${pt.x}" cy="${pt.y}" r="22" fill="transparent" class="cursor-pointer" data-point-idx="${idx}" />
+        `;
+      });
+
+      pointsGroup.innerHTML = groupHtml;
+
+      // Update Top card labels
+      pointsCountLabel.textContent = `${editorPoints.length} / 30`;
+      pointsSlider.value = editorPoints.length;
+      lineLengthLabel.textContent = `${lineLengthPct}% ${lineLengthPct === 100 ? '(Full)' : ''}`;
+
+      // Update Final Val Input
+      const lastPoint = editorPoints[editorPoints.length - 1];
+      if (lastPoint) {
+        let lastVal = (lastPoint.y * cfg.maxY).toFixed(0);
+        if (cfg.maxY <= 100) lastVal += '%';
+        finalValInput.value = lastVal;
+      }
+
+      // Update Drag Status Text
+      if (activePointIdx >= 0 && activePointIdx < editorPoints.length) {
+        const curPt = editorPoints[activePointIdx];
+        let curVal = (curPt.y * cfg.maxY).toFixed(1);
+        if (cfg.maxY <= 100) curVal += '%';
+        dragStatusText.textContent = `Dragging Point ${activePointIdx + 1} (${curVal})`;
+      }
+    }
+
+    function setLengthPreset(pct) {
+      lineLengthPct = parseInt(pct);
+      document.getElementById('lineLengthSlider').value = pct;
+      [100, 75, 50, 25].forEach(p => {
+        const btn = document.getElementById(`presetBtn-${p}`);
+        if (btn) {
+          if (p === lineLengthPct) {
+            btn.className = "py-2 rounded-xl border border-[#ea580c] bg-[#12141a] text-white text-center transition cursor-pointer";
+          } else {
+            btn.className = "py-2 rounded-xl border border-[#2e3340] bg-[#12141a] text-neutral-300 text-center hover:bg-[#232730] transition cursor-pointer";
+          }
+        }
+      });
+      renderEditorCanvas();
+    }
+
+    function adjustPointsCount(delta) {
+      let newCount = editorPoints.length + delta;
+      newCount = Math.max(3, Math.min(30, newCount));
+      setPointsCount(newCount);
+    }
+
+    function setPointsCount(count) {
+      count = parseInt(count);
+      if (count === editorPoints.length) return;
+      if (count < 3 || count > 30) return;
+
+      // Resample points evenly along current X range
+      const newPoints = [];
+      for (let i = 0; i < count; i++) {
+        const normX = (i / (count - 1)) * 0.96 + 0.02;
+        // Interpolate Y from existing points
+        let interpY = 0.5;
+        for (let j = 0; j < editorPoints.length - 1; j++) {
+          if (normX >= editorPoints[j].x && normX <= editorPoints[j + 1].x) {
+            const frac = (normX - editorPoints[j].x) / (editorPoints[j + 1].x - editorPoints[j].x);
+            interpY = editorPoints[j].y + frac * (editorPoints[j + 1].y - editorPoints[j].y);
+            break;
+          }
+        }
+        newPoints.push({ x: normX, y: Math.max(0, Math.min(1, interpY)) });
+      }
+      editorPoints = newPoints;
+      activePointIdx = Math.min(activePointIdx, editorPoints.length - 1);
+      renderEditorCanvas();
+    }
+
+    // Final Value Input listener (Syncs with last point)
+    document.getElementById('finalValInput').addEventListener('input', (e) => {
+      const raw = e.target.value.replace('%', '').trim();
+      const num = parseFloat(raw);
+      const cfg = graphConfigs[currentEditorGraph];
+      if (!isNaN(num) && editorPoints.length > 0) {
+        let normY = num / cfg.maxY;
+        normY = Math.max(0, Math.min(1, normY));
+        editorPoints[editorPoints.length - 1].y = normY;
+        renderEditorCanvas();
+      }
+    });
+
+    // SVG Dragging Event Handlers
+    const svgCanvas = document.getElementById('editorSvgCanvas');
+
+    svgCanvas.addEventListener('mousedown', (e) => {
+      const hit = e.target.closest('[data-point-idx]');
+      if (hit) {
+        activePointIdx = parseInt(hit.getAttribute('data-point-idx'));
+        isDraggingNode = true;
+        renderEditorCanvas();
+      }
+    });
+
+    svgCanvas.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      const hit = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('[data-point-idx]');
+      if (hit) {
+        activePointIdx = parseInt(hit.getAttribute('data-point-idx'));
+        isDraggingNode = true;
+        renderEditorCanvas();
+      }
+    }, { passive: true });
+
+    function handleDragMove(clientY) {
+      if (!isDraggingNode || activePointIdx < 0 || activePointIdx >= editorPoints.length) return;
+      const rect = svgCanvas.getBoundingClientRect();
+      const H = rect.height;
+      let normY = (rect.bottom - clientY) / H;
+      normY = Math.max(0.01, Math.min(0.99, normY));
+      editorPoints[activePointIdx].y = normY;
+      renderEditorCanvas();
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      if (isDraggingNode) handleDragMove(e.clientY);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (isDraggingNode) handleDragMove(e.touches[0].clientY);
+    });
+
+    window.addEventListener('mouseup', () => { isDraggingNode = false; });
+    window.addEventListener('touchend', () => { isDraggingNode = false; });
+
+    // Save Graph Curve back to target chart in page
+    function saveGraphCurve() {
+      const cfg = graphConfigs[currentEditorGraph];
+      if (!cfg) return;
+
+      const targetPath = document.getElementById(cfg.targetSvgId);
+      if (targetPath) {
+        // Map points to target SVG viewBox coordinates (w: 300, h: 100)
+        const targetW = cfg.targetBox.w * (lineLengthPct / 100);
+        const targetH = cfg.targetBox.h;
+
+        const scaledPts = editorPoints.map(pt => ({
+          x: pt.x * targetW,
+          y: targetH - (pt.y * targetH * 0.95) // Keep slight margin
+        }));
+
+        const newPathD = catmullRomToBezierPath(scaledPts);
+        targetPath.setAttribute('d', newPathD);
+      }
+
+      closeGraphEditor();
+      showToast(`Saved "${cfg.title}" curve successfully!`);
+    }
+
+    // Reset All Data to Initial Defaults
+    function resetAllData() {
+      switchViewsFilter('all');
+      document.getElementById('retentionChartLine').setAttribute('d', "M 0.0,0.3 C 1.3,0.6 5.3,1.5 7.9,2.3 C 10.5,3.1 13.2,4.3 15.8,5.3 C 18.4,6.3 21.1,7.2 23.7,8.3 C 26.3,9.4 29.0,9.8 31.6,12.0 C 34.2,14.2 36.9,17.5 39.5,21.3 C 42.1,25.1 44.8,31.3 47.4,35.0 C 50.0,38.7 52.7,41.6 55.3,43.7 C 57.9,45.8 60.6,46.7 63.2,47.7 C 65.8,48.8 68.5,49.4 71.1,50.0 C 73.7,50.6 76.3,50.8 78.9,51.3 C 81.5,51.8 84.2,52.4 86.8,53.0 C 89.4,53.6 92.1,54.2 94.7,54.7 C 97.3,55.2 100.0,55.9 102.6,56.3 C 105.2,56.7 107.9,56.5 110.5,57.0 C 113.1,57.5 115.8,58.5 118.4,59.0 C 121.0,59.5 123.7,59.2 126.3,59.7 C 128.9,60.2 131.6,61.2 134.2,62.0 C 136.8,62.8 139.5,63.7 142.1,64.3 C 144.7,64.9 147.4,65.3 150.0,65.7 C 152.6,66.1 155.3,66.5 157.9,66.7 C 160.5,66.9 163.2,66.7 165.8,67.0 C 168.4,67.3 171.1,67.6 173.7,68.3 C 176.3,69.0 179.0,70.1 181.6,71.0 C 184.2,71.9 186.9,73.2 189.5,73.7 C 192.1,74.2 194.8,74.1 197.4,74.3 C 200.0,74.5 202.7,74.8 205.3,75.0 C 207.9,75.2 210.6,75.5 213.2,75.7 C 215.8,75.9 218.5,76.2 221.1,76.3 C 223.7,76.4 226.3,76.2 228.9,76.3 C 231.5,76.4 234.2,76.8 236.8,77.0 C 239.4,77.2 242.1,77.6 244.7,77.7 C 247.3,77.8 250.0,77.6 252.6,77.7 C 255.2,77.8 257.9,78.0 260.5,78.3 C 263.1,78.6 265.8,79.2 268.4,79.7 C 271.0,80.2 273.7,80.8 276.3,81.0 C 278.9,81.2 281.6,81.0 284.2,81.0 C 286.8,81.0 289.5,80.9 292.1,81.0 C 294.7,81.1 298.7,81.6 300.0,81.7");
+      document.getElementById('likesChartLine').setAttribute('d', "M 0.0,52.8 C 1.6,46.0 6.5,16.9 9.7,12.0 C 12.9,7.1 16.2,9.3 19.4,23.1 C 22.6,36.9 25.8,82.6 29.0,94.8 C 32.2,96.0 35.5,96.0 38.7,96.0 C 41.9,92.9 45.2,81.5 48.4,76.2 C 51.6,70.9 54.9,64.5 58.1,64.3 C 61.3,64.1 64.5,69.7 67.7,75.0 C 70.9,80.3 74.2,92.5 77.4,96.0 C 80.6,96.0 83.9,96.0 87.1,96.0 C 90.3,94.5 93.6,86.9 96.8,86.9 C 100.0,86.9 103.3,94.5 106.5,96.0 L 125.8,96.0 C 129.0,94.9 132.3,90.4 135.5,89.3 C 138.7,88.2 142.0,88.2 145.2,89.3 C 148.4,90.4 151.6,94.9 154.8,96.0 L 280.6,96.0 C 283.8,88.1 287.1,58.6 290.3,48.8 C 293.5,39.0 298.4,39.0 300.0,37.0");
+      showToast('All graphs and values restored to defaults!');
+    }
+
+
+    // =========================================================================
+    // REEL LINK FETCHER & ASPECT RATIO OPTIMIZER ENGINE
+    // =========================================================================
+    let optCurrentAspect = '2:3';
+    let optCurrentAlign = 'center';
+    let optSourceImg = new Image();
+    let optSourceLoaded = false;
+    let optCroppedMainDataUrl = null;
+    let optCroppedMiniDataUrl = null;
+
+    // Open & Populate Modal
+
+    // =========================================================================
+    // DYNAMIC COUNTRY BREAKDOWN MANAGEMENT
+    // =========================================================================
+    let appCountries = [
+      { id: 'country-us', name: 'United States', pct: '35.7%' },
+      { id: 'country-br', name: 'Brazil', pct: '26.4%' },
+      { id: 'country-in', name: 'India', pct: '8.1%' },
+      { id: 'country-ca', name: 'Canada', pct: '5.4%' },
+      { id: 'country-uk', name: 'United Kingdom', pct: '2.9%' }
+    ];
+
+    function renderCountriesInPage() {
+      const container = document.getElementById('countryListContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      appCountries.forEach(c => {
+        const row = document.createElement('div');
+        row.className = 'country-row group';
+        row.setAttribute('data-country-id', c.id);
+        const barWidth = parseFloat(c.pct.replace('%', '')) || 0;
+
+        row.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-white country-name editable" contenteditable="true" onblur="handleCountryNameEdit('${c.id}', this.textContent)">${c.name}</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 h-2 bg-[#25282d] rounded-full overflow-hidden">
+              <div id="bar-${c.id}" class="h-full bg-[#ff35fd] rounded-full transition-all duration-300" style="width: ${barWidth}%;"></div>
+            </div>
+            <span class="w-14 text-right font-bold country-val editable shrink-0" contenteditable="true" data-progress-target="bar-${c.id}" onblur="handleCountryValEdit('${c.id}', this.textContent)">${c.pct}</span>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+
+      // Bind input events for live bar resizing
+      container.querySelectorAll('[data-progress-target]').forEach(el => {
+        el.addEventListener('input', () => {
+          const raw = el.textContent.replace('%', '').trim();
+          const val = parseFloat(raw);
+          if (!isNaN(val)) {
+            const targetId = el.getAttribute('data-progress-target');
+            const bar = document.getElementById(targetId);
+            if (bar) bar.style.width = Math.min(100, Math.max(0, val)) + '%';
+          }
+        });
+      });
+    }
+
+    function promptAddNewCountry() {
+      let name = null;
+      try {
+        name = prompt('Enter Country Name (e.g. Germany, Australia):', 'Germany');
+      } catch(e) {}
+      if (!name || !name.trim()) {
+        name = 'New Country';
+      }
+      let pct = '2.5%';
+      try {
+        const pInput = prompt(`Enter Audience Percentage for ${name} (e.g. 2.5%):`, '2.5%');
+        if (pInput && pInput.trim()) pct = pInput.trim();
+      } catch(e) {}
+      const formattedPct = pct.includes('%') ? pct.trim() : pct.trim() + '%';
+      const newId = 'country-' + Date.now();
+
+      appCountries.push({
+        id: newId,
+        name: name.trim(),
+        pct: formattedPct
+      });
+
+      renderCountriesInPage();
+      saveCountriesToStorage();
+      showToast(`Added country: ${name} (${formattedPct})`);
+    }
+
+    function removeCountryRow(id) {
+      appCountries = appCountries.filter(c => c.id !== id);
+      renderCountriesInPage();
+      saveCountriesToStorage();
+      showToast('Country removed');
+    }
+
+    function handleCountryNameEdit(id, newName) {
+      const c = appCountries.find(x => x.id === id);
+      if (c && newName) {
+        c.name = newName.trim();
+        saveCountriesToStorage();
+      }
+    }
+
+    function handleCountryValEdit(id, newVal) {
+      const c = appCountries.find(x => x.id === id);
+      if (c && newVal) {
+        c.pct = newVal.includes('%') ? newVal.trim() : newVal.trim() + '%';
+        saveCountriesToStorage();
+      }
+    }
+
+    function saveCountriesToStorage() {
+      try {
+        localStorage.setItem('savedAppCountries', JSON.stringify(appCountries));
+      } catch(e){}
+    }
+
+    // Modal Open & Close Handlers
+    function openReelLinkModal() {
+      const modal = document.getElementById('reelLinkModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      }
+      populateModalCountries();
+    }
+
+    function closeReelLinkModal() {
+      const modal = document.getElementById('reelLinkModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // Modal Countries List Handlers
+    function populateModalCountries() {
+      const list = document.getElementById('modalCountryList');
+      if (!list) return;
+      list.innerHTML = '';
+
+      appCountries.forEach((c, idx) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-2 bg-[#12141a] border border-[#2e3340] p-2 rounded-xl';
+        item.innerHTML = `
+          <input type="text" value="${c.name}" class="flex-1 bg-transparent text-white font-medium text-[13px] focus:outline-none modal-c-name" data-idx="${idx}" placeholder="Country Name">
+          <input type="text" value="${c.pct}" class="w-20 bg-[#181b22] border border-[#3b4150] rounded-lg px-2 py-1 text-center font-bold text-white text-[13px] focus:outline-none modal-c-pct" data-idx="${idx}" placeholder="%">
+          <button onclick="removeModalCountry(${idx})" class="text-neutral-500 hover:text-rose-400 p-1 text-[13px] cursor-pointer" title="Remove">✕</button>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function addModalCountryRow() {
+      appCountries.push({
+        id: 'country-' + Date.now(),
+        name: 'New Country',
+        pct: '5.0%'
+      });
+      populateModalCountries();
+    }
+
+    function removeModalCountry(idx) {
+      if (idx >= 0 && idx < appCountries.length) {
+        appCountries.splice(idx, 1);
+        populateModalCountries();
+      }
+    }
+
+    function syncModalCountriesToApp() {
+      const names = document.querySelectorAll('.modal-c-name');
+      const pcts = document.querySelectorAll('.modal-c-pct');
+      names.forEach((el, i) => {
+        if (appCountries[i]) {
+          appCountries[i].name = el.value.trim() || 'Country';
+          const p = pcts[i] ? pcts[i].value.trim() : '0%';
+          appCountries[i].pct = p.includes('%') ? p : p + '%';
+        }
+      });
+      renderCountriesInPage();
+      saveCountriesToStorage();
+    }
+
+    // =========================================================================
+    // MULTI-ENDPOINT REEL FETCHER & SMART SYNTHESIS ENGINE
+    // =========================================================================
+    // Global native bridge callbacks
+    window.onNativeReelHtmlReceived = function(html, code) {
+      setReelFetchLoading(false);
+      let foundImg = null;
+      let likes = 0;
+      let comments = 0;
+
+      if (html) {
+        const imgM = html.match(/property="og:image"\s+content="([^"]+)"/i) || html.match(/content="([^"]+)"\s+property="og:image"/i);
+        if (imgM && imgM[1]) foundImg = imgM[1].replace(/&amp;/g, "&");
+
+        const descM = html.match(/property="og:description"\s+content="([^"]+)"/i) || html.match(/content="([^"]+)"\s+property="og:description"/i);
+        if (descM && descM[1]) {
+          const lm = descM[1].match(/([0-9KMkm.,]+)\s*likes?/i);
+          if (lm) likes = lm[1];
+          const cm = descM[1].match(/([0-9KMkm.,]+)\s*comments?/i);
+          if (cm) comments = cm[1];
+        }
+      }
+
+      if (likes !== null && likes !== undefined) document.getElementById("reelInputLikes").value = likes.toString();
+      if (comments !== null && comments !== undefined) document.getElementById("reelInputComments").value = comments.toString();
+
+      if (foundImg) {
+        setOptimizerSource(foundImg);
+      }
+      setReelFetchStatus(`✓ Loaded Reel "${code}": ${likes} Likes, ${comments} Comments!`, "text-emerald-400");
+      showToast(`Reel loaded: ${likes} Likes, ${comments} Comments`);
+    };
+
+    window.onNativeReelDataReceived = function(data) {
+      setReelFetchLoading(false);
+      if (data && data.success) {
+        if (data.likes !== undefined) document.getElementById("reelInputLikes").value = data.likes.toString();
+        if (data.comments !== undefined) document.getElementById("reelInputComments").value = data.comments.toString();
+        if (data.thumbnail) setOptimizerSource(data.thumbnail);
+        setReelFetchStatus(`✓ Loaded Reel "${data.shortcode}": ${data.likes} Likes, ${data.comments} Comments!`, "text-emerald-400");
+        showToast(`Reel loaded: ${data.likes} Likes, ${data.comments} Comments`);
+      } else {
+        setReelFetchStatus("Could not resolve Reel data via native bridge.", "text-amber-400");
+      }
+    };
+
+    window.onNativeReelDataFailed = function(err, code) {
+      setReelFetchLoading(false);
+      setReelFetchStatus(`Native fetch error: ${err || "Unable to connect"}. You can paste direct image or numbers below.`, "text-amber-400");
+    };
+
+    async function pasteReelUrl() {
+      try {
+        if (navigator.clipboard && navigator.clipboard.readText) {
+          const text = await navigator.clipboard.readText();
+          if (text) {
+            const input = document.getElementById("reelLinkUrlInput");
+            if (input) {
+              input.value = text.trim();
+              setReelFetchStatus("Pasted link from clipboard. Fetching stats...", "text-blue-400");
+              fetchReelFromUrl();
+            }
+          }
+        } else {
+          showToast("Clipboard unavailable. Please paste link directly.");
+        }
+      } catch (err) {
+        showToast("Please paste link directly into the input.");
+      }
+    }
+
+    function setReelFetchLoading(isLoading) {
+      const sp = document.getElementById("fetchBtnSpinner");
+      const tx = document.getElementById("fetchBtnText");
+      const btn = document.getElementById("btnFetchReel");
+      if (isLoading) {
+        if (sp) sp.classList.remove("hidden");
+        if (tx) tx.textContent = " Fetching...";
+        if (btn) btn.disabled = true;
+      } else {
+        if (sp) sp.classList.add("hidden");
+        if (tx) tx.textContent = "⚡ Fetch";
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function setReelFetchStatus(msg, colorClass) {
+      const st = document.getElementById("reelLinkStatus");
+      if (!st) return;
+      st.className = `text-[11px] leading-tight min-h-[16px] ${colorClass || "text-neutral-400"}`;
+      st.textContent = msg;
+    }
+
+    function applyFetchedData(likes, comments, thumb, shortcode, sourceName) {
+      setReelFetchLoading(false);
+      if (likes !== undefined && likes !== null) {
+        const lInput = document.getElementById('reelInputLikes');
+        if (lInput) lInput.value = likes.toString();
+      }
+      if (comments !== undefined && comments !== null) {
+        const cInput = document.getElementById('reelInputComments');
+        if (cInput) cInput.value = comments.toString();
+      }
+      if (thumb) {
+        setOptimizerSource(thumb);
+      }
+      setReelFetchStatus(`✓ Loaded Reel "${shortcode}" via ${sourceName}: ${likes || 0} Likes, ${comments || 0} Comments!`, 'text-emerald-400');
+      showToast(`Reel loaded: ${likes || 0} Likes, ${comments || 0} Comments`);
+    }
+
+    function fetchReelFromUrl() {
+      const urlInput = document.getElementById("reelLinkUrlInput");
+      const rawUrl = urlInput ? urlInput.value.trim() : "";
+
+      if (!rawUrl) {
+        setReelFetchStatus("Please enter an Instagram Reel or post link first.", "text-amber-400");
+        return;
+      }
+
+      // Supports /reels/CODE, /reel/CODE, /p/CODE, /tv/CODE, /share/reel/CODE, /share/p/CODE, or raw CODE
+      const match = rawUrl.match(/(?:reels?|p|tv|share\/reel|share\/p)\/([A-Za-z0-9_-]+)/i);
+      let code = match ? match[1] : (/^[A-Za-z0-9_-]{8,25}$/.test(rawUrl) ? rawUrl : null);
+
+      if (!code) {
+        setReelFetchStatus("Could not find Instagram shortcode. Example: https://instagram.com/reel/C-xyz123/", "text-rose-400");
+        return;
+      }
+
+      setReelFetchLoading(true);
+      setReelFetchStatus(`Resolving Reel & fetching stats for "${code}"...`, "text-blue-400");
+
+      // 1. Check Native Android Bridge
+      if (window.AndroidBridge && typeof window.AndroidBridge.fetchReelNative === "function") {
+        window.AndroidBridge.fetchReelNative(code);
+        return;
+      }
+
+      const applyFetchedData = (likes, comments, thumb, shortcode, sourceName) => {
+        setReelFetchLoading(false);
+        if (likes !== undefined && likes !== null) {
+          const lInput = document.getElementById("reelInputLikes");
+          if (lInput) lInput.value = likes.toString();
+        }
+        if (comments !== undefined && comments !== null) {
+          const cInput = document.getElementById("reelInputComments");
+          if (cInput) cInput.value = comments.toString();
+        }
+        if (thumb) {
+          setOptimizerSource(thumb);
+        }
+        setReelFetchStatus(`✓ Connected to Reel "${shortcode}" via ${sourceName}: ${likes || 0} Likes, ${comments || 0} Comments!`, "text-emerald-400");
+        showToast(`Reel loaded: ${likes || 0} Likes, ${comments || 0} Comments`);
+      };
+
+      // 2. Check local server API endpoints
+      const tryLocalServer = () => {
+        const localEndpoints = [];
+        if (window.location.protocol.startsWith("http")) {
+          localEndpoints.push(`/api/fetch-reel?code=${encodeURIComponent(code)}`);
+        }
+        localEndpoints.push(`http://localhost:8080/api/fetch-reel?code=${encodeURIComponent(code)}`);
+        localEndpoints.push(`http://127.0.0.1:8080/api/fetch-reel?code=${encodeURIComponent(code)}`);
+
+        const tryNextLocal = (idx) => {
+          if (idx >= localEndpoints.length) {
+            tryMicrolinkApi();
+            return;
+          }
+          fetch(localEndpoints[idx], { cache: "no-cache" })
+            .then(r => r.json())
+            .then(data => {
+              if (data && data.success && (data.thumbnail || data.likes !== undefined)) {
+                applyFetchedData(data.likes, data.comments, data.thumbnail, code, "Local Engine");
+              } else {
+                tryNextLocal(idx + 1);
+              }
+            })
+            .catch(() => tryNextLocal(idx + 1));
+        };
+        tryNextLocal(0);
+      };
+
+      // 3. Microlink Public Meta API (CORS enabled for browsers, extracts open-graph tags)
+      const tryMicrolinkApi = () => {
+        const targetUrl = `https://www.instagram.com/reel/${code}/`;
+        const microUrl = `https://api.microlink.io?url=${encodeURIComponent(targetUrl)}`;
+
+        fetch(microUrl)
+          .then(r => r.json())
+          .then(res => {
+            if (res && res.status === "success" && res.data) {
+              const d = res.data;
+              let likes = 0;
+              let comments = 0;
+              if (d.description) {
+                const lm = d.description.match(/([0-9KMkm.,]+)\s*likes?/i);
+                if (lm) likes = lm[1];
+                const cm = d.description.match(/([0-9KMkm.,]+)\s*comments?/i);
+                if (cm) comments = cm[1];
+              }
+              let thumb = null;
+              if (d.image && d.image.url) thumb = d.image.url;
+              else if (typeof d.image === "string") thumb = d.image;
+
+              if (thumb || likes !== 0 || comments !== 0) {
+                applyFetchedData(likes, comments, thumb, code, "Live Instagram API");
+                return;
+              }
+            }
+            tryFallbackProxies();
+          })
+          .catch(() => tryFallbackProxies());
+      };
+
+      // 4. Proxy Fallback
+      const tryFallbackProxies = () => {
+        const embedUrl = `https://www.instagram.com/reel/${code}/embed/captioned/`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(embedUrl)}`;
+
+        fetch(proxyUrl)
+          .then(r => r.json())
+          .then(data => {
+            let foundImg = null;
+            let likes = 0;
+            let comments = 0;
+            if (data && data.contents) {
+              const html = data.contents;
+              const imgM = html.match(/property="og:image"\s+content="([^"]+)"/i) || html.match(/content="([^"]+)"\s+property="og:image"/i);
+              if (imgM && imgM[1]) foundImg = imgM[1].replace(/&amp;/g, "&");
+              const descM = html.match(/property="og:description"\s+content="([^"]+)"/i) || html.match(/content="([^"]+)"\s+property="og:description"/i);
+              if (descM && descM[1]) {
+                const lm = descM[1].match(/([0-9KMkm.,]+)\s*likes?/i);
+                if (lm) likes = lm[1];
+                const cm = descM[1].match(/([0-9KMkm.,]+)\s*comments?/i);
+                if (cm) comments = cm[1];
+              }
+            }
+            if (foundImg) {
+              applyFetchedData(likes, comments, foundImg, code, "Proxy Resolver");
+            } else {
+              finishWithManualPrompt();
+            }
+          })
+          .catch(() => finishWithManualPrompt());
+      };
+
+      const finishWithManualPrompt = () => {
+        setReelFetchLoading(false);
+        setReelFetchStatus(`Could not reach Instagram servers automatically. You can paste a direct image URL or upload from your device below.`, "text-amber-400");
+      };
+
+      tryLocalServer();
+    }
+
+    function setOptimizerSource(src) {
+      if (!src) return;
+      optSourceLoaded = false;
+      optCroppedMainDataUrl = src;
+      optCroppedMiniDataUrl = src;
+
+      // Update previews immediately with source
+      const mainPrev = document.getElementById("optMainPreviewImg");
+      const miniPrev = document.getElementById("optMiniPreviewImg");
+      if (mainPrev) mainPrev.src = src;
+      if (miniPrev) miniPrev.src = src;
+
+      const directInput = document.getElementById("reelDirectImgUrl");
+      if (directInput) directInput.value = src;
+
+      // Try loading into Image object for canvas crop
+      optSourceImg = new Image();
+      optSourceImg.crossOrigin = "anonymous";
+      optSourceImg.onload = () => {
+        optSourceLoaded = true;
+        renderOptimizerPreview();
+      };
+      optSourceImg.onerror = () => {
+        // If crossOrigin blocks it, reload without crossOrigin so it still renders
+        const nonCorsImg = new Image();
+        nonCorsImg.onload = () => {
+          optSourceImg = nonCorsImg;
+          optSourceLoaded = true;
+          optCroppedMainDataUrl = src;
+          optCroppedMiniDataUrl = src;
+        };
+        nonCorsImg.src = src;
+      };
+      optSourceImg.src = src;
+    }
+
+    function handleDirectThumbUrl(url) {
+      const u = url.trim();
+      if (u) {
+        setOptimizerSource(u);
+        setReelFetchStatus('Loaded custom image from direct URL', 'text-neutral-300');
+      }
+    }
+
+    function handleReelDeviceFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          setOptimizerSource(dataUrl);
+          setReelFetchStatus(`✓ Loaded image from device: ${file.name}`, 'text-emerald-400');
+          showToast('Image loaded from device!');
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function setAspectPreset(preset) {
+      optCurrentAspect = preset;
+      const presets = ['2:3', '9:16', '4:5', '1:1'];
+      presets.forEach(p => {
+        const btnId = 'btnRatio-' + p.replace(':', '-');
+        const btn = document.getElementById(btnId);
+        if (btn) {
+          if (p === preset) {
+            btn.className = 'bg-[#d946ef] text-white py-2 rounded-xl transition text-center font-bold shadow cursor-pointer';
+          } else {
+            btn.className = 'bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-2 rounded-xl transition text-center border border-neutral-700 cursor-pointer';
+          }
+        }
+      });
+      renderOptimizerPreview();
+    }
+
+    function setCropAlign(align) {
+      optCurrentAlign = align;
+      const aligns = ['top', 'center', 'bottom'];
+      aligns.forEach(a => {
+        const btn = document.getElementById('btnAlign-' + a);
+        if (btn) {
+          if (a === align) {
+            btn.className = 'bg-[#d946ef] text-white py-1.5 rounded-lg transition text-center font-bold shadow cursor-pointer';
+          } else {
+            btn.className = 'bg-[#242730] hover:bg-[#2e323e] text-neutral-300 py-1.5 rounded-lg transition text-center border border-neutral-700 cursor-pointer';
+          }
+        }
+      });
+      renderOptimizerPreview();
+    }
+
+    function renderOptimizerPreview() {
+      if (!optSourceImg || !optSourceImg.width || !optSourceImg.height) return;
+
+      const iw = optSourceImg.width;
+      const ih = optSourceImg.height;
+
+      // Determine target aspect ratio (width / height)
+      let targetRatio = 2 / 3; // default native
+      if (optCurrentAspect === '9:16') targetRatio = 9 / 16;
+      else if (optCurrentAspect === '4:5') targetRatio = 4 / 5;
+      else if (optCurrentAspect === '1:1') targetRatio = 1 / 1;
+
+      // Source crop box calculation (Cover mode with custom alignment)
+      let cropW = iw;
+      let cropH = iw / targetRatio;
+
+      if (cropH > ih) {
+        cropH = ih;
+        cropW = ih * targetRatio;
+      }
+
+      let cropX = (iw - cropW) / 2; // Center horizontally
+      let cropY = (ih - cropH) / 2; // Center vertically by default
+
+      if (optCurrentAlign === 'top') {
+        cropY = 0;
+      } else if (optCurrentAlign === 'bottom') {
+        cropY = ih - cropH;
+      }
+
+      // 1. Render Main Card Canvas (Target resolution: 672 x 1008 px)
+      const mainCanvas = document.createElement('canvas');
+      mainCanvas.width = 672;
+      mainCanvas.height = 1008;
+      const mainCtx = mainCanvas.getContext('2d');
+      mainCtx.imageSmoothingEnabled = true;
+      mainCtx.imageSmoothingQuality = 'high';
+      mainCtx.drawImage(optSourceImg, cropX, cropY, cropW, cropH, 0, 0, 672, 1008);
+
+      try {
+        optCroppedMainDataUrl = mainCanvas.toDataURL('image/jpeg', 0.94);
+        const mainPrev = document.getElementById('optMainPreviewImg');
+        if (mainPrev) mainPrev.src = optCroppedMainDataUrl;
+      } catch (e) {
+        optCroppedMainDataUrl = optSourceImg.src;
+      }
+
+      // 2. Render Mini Retention Canvas (Target resolution: 372 x 558 px)
+      const miniCanvas = document.createElement('canvas');
+      miniCanvas.width = 372;
+      miniCanvas.height = 558;
+      const miniCtx = miniCanvas.getContext('2d');
+      miniCtx.imageSmoothingEnabled = true;
+      miniCtx.imageSmoothingQuality = 'high';
+      miniCtx.drawImage(optSourceImg, cropX, cropY, cropW, cropH, 0, 0, 372, 558);
+
+      try {
+        optCroppedMiniDataUrl = miniCanvas.toDataURL('image/jpeg', 0.92);
+        const miniPrev = document.getElementById('optMiniPreviewImg');
+        if (miniPrev) miniPrev.src = optCroppedMiniDataUrl;
+      } catch (e) {
+        optCroppedMiniDataUrl = optSourceImg.src;
+      }
+    }
+
+    function applyReelDataToInsights() {
+      // Sync modal countries
+      syncModalCountriesToApp();
+
+      // 1. Update thumbnails in page
+      const mainThumb = document.getElementById('mainVideoThumb');
+      const miniThumb = document.getElementById('miniVideoThumb');
+
+      if (optCroppedMainDataUrl) {
+        if (mainThumb) mainThumb.src = optCroppedMainDataUrl;
+        try { localStorage.setItem('savedReelThumb', optCroppedMainDataUrl); } catch(e){}
+      } else if (optSourceImg && optSourceImg.src) {
+        if (mainThumb) mainThumb.src = optSourceImg.src;
+        try { localStorage.setItem('savedReelThumb', optSourceImg.src); } catch(e){}
+      }
+
+      if (optCroppedMiniDataUrl) {
+        if (miniThumb) miniThumb.src = optCroppedMiniDataUrl;
+        try { localStorage.setItem('savedMiniThumb', optCroppedMiniDataUrl); } catch(e){}
+      } else if (optSourceImg && optSourceImg.src) {
+        if (miniThumb) miniThumb.src = optSourceImg.src;
+        try { localStorage.setItem('savedMiniThumb', optSourceImg.src); } catch(e){}
+      }
+
+      // 2. Update metric counts in DOM
+      const likes = document.getElementById('reelInputLikes').value.trim();
+      const comments = document.getElementById('reelInputComments').value.trim();
+      const reposts = document.getElementById('reelInputReposts').value.trim();
+      const shares = document.getElementById('reelInputShares').value.trim();
+      const saves = document.getElementById('reelInputSaves').value.trim();
+      const views = document.getElementById('reelInputViews').value.trim();
+      const viewers = document.getElementById('reelInputViewers').value.trim();
+      const watchTime = document.getElementById('reelInputWatchTime').value.trim();
+
+      // Top action numbers
+      const mLike = document.getElementById('metricLikesCount'); if (mLike && likes) mLike.textContent = likes;
+      const mComm = document.getElementById('metricCommentsCount'); if (mComm && comments) mComm.textContent = comments;
+      const mRepo = document.getElementById('metricRepostsCount'); if (mRepo && reposts) mRepo.textContent = reposts;
+      const mShar = document.getElementById('metricSharesCount'); if (mShar && shares) mShar.textContent = shares;
+      const mSave = document.getElementById('metricSavesCount'); if (mSave && saves) mSave.textContent = saves;
+
+      // Summary section
+      const sViews = document.getElementById('summaryViewsCount'); if (sViews && views) sViews.textContent = views;
+      const sViewers = document.getElementById('summaryViewersCount'); if (sViewers && viewers) sViewers.textContent = viewers;
+      const sWatch = document.getElementById('summaryWatchTime'); if (sWatch && watchTime) sWatch.textContent = watchTime;
+
+      // Engagement tab interactions
+      const iLike = document.getElementById('interactionsLikesCount'); if (iLike && likes) iLike.textContent = likes;
+      const iComm = document.getElementById('interactionsCommentsCount'); if (iComm && comments) iComm.textContent = comments;
+      const iRepo = document.getElementById('interactionsRepostsCount'); if (iRepo && reposts) iRepo.textContent = reposts;
+      const iShar = document.getElementById('interactionsSharesCount'); if (iShar && shares) iShar.textContent = shares;
+      const iSave = document.getElementById('interactionsSavesCount'); if (iSave && saves) iSave.textContent = saves;
+
+      // Auto-calculate rates
+      function parseMetric(val) {
+        if (!val) return 0;
+        let s = val.toString().toLowerCase().replace(/,/g, '').trim();
+        let mult = 1;
+        if (s.endsWith('k')) { mult = 1000; s = s.slice(0, -1); }
+        else if (s.endsWith('m')) { mult = 1000000; s = s.slice(0, -1); }
+        const n = parseFloat(s);
+        return isNaN(n) ? 0 : n * mult;
+      }
+
+      const vNum = parseMetric(views);
+      if (vNum > 0) {
+        const lNum = parseMetric(likes);
+        const sNum = parseMetric(shares);
+        const svNum = parseMetric(saves);
+        const rNum = parseMetric(reposts);
+        const cNum = parseMetric(comments);
+
+        const rLike = document.getElementById('rateLikeVal'); if (rLike) rLike.textContent = ((lNum / vNum) * 100).toFixed(1) + '%';
+        const rShare = document.getElementById('rateShareVal'); if (rShare) rShare.textContent = ((sNum / vNum) * 100).toFixed(1) + '%';
+        const rSave = document.getElementById('rateSaveVal'); if (rSave) rSave.textContent = ((svNum / vNum) * 100).toFixed(1) + '%';
+        const rRepo = document.getElementById('rateRepostVal'); if (rRepo) rRepo.textContent = ((rNum / vNum) * 100).toFixed(1) + '%';
+        const rComm = document.getElementById('rateCommentVal'); if (rComm) rComm.textContent = ((cNum / vNum) * 100).toFixed(1) + '%';
+      }
+
+      // Persist to localStorage
+      try {
+        const data = { likes, comments, reposts, shares, saves, views, viewers, watchTime };
+        localStorage.setItem('reelInsightsData', JSON.stringify(data));
+      } catch(e){}
+
+      closeReelLinkModal();
+      showToast('✓ Reel data & optimized thumbnail applied!');
+    }
+
+    // Restore persisted thumbnails & metrics on boot
+    function initInsightsApp() {
+      const savedC = localStorage.getItem('savedAppCountries');
+      if (savedC) {
+        try { appCountries = JSON.parse(savedC); } catch(e){}
+      }
+      renderCountriesInPage();
+
+      try {
+        const savedMain = localStorage.getItem('savedReelThumb');
+        if (savedMain) {
+          const mainThumb = document.getElementById('mainVideoThumb');
+          if (mainThumb) mainThumb.src = savedMain;
+        }
+        const savedMini = localStorage.getItem('savedMiniThumb');
+        if (savedMini) {
+          const miniThumb = document.getElementById('miniVideoThumb');
+          if (miniThumb) miniThumb.src = savedMini;
+        }
+        const savedData = localStorage.getItem('reelInsightsData');
+        if (savedData) {
+          const d = JSON.parse(savedData);
+          if (d.likes) {
+            const el = document.getElementById('metricLikesCount'); if (el) el.textContent = d.likes;
+            const iel = document.getElementById('interactionsLikesCount'); if (iel) iel.textContent = d.likes;
+          }
+          if (d.comments) {
+            const el = document.getElementById('metricCommentsCount'); if (el) el.textContent = d.comments;
+            const iel = document.getElementById('interactionsCommentsCount'); if (iel) iel.textContent = d.comments;
+          }
+          if (d.reposts) {
+            const el = document.getElementById('metricRepostsCount'); if (el) el.textContent = d.reposts;
+            const iel = document.getElementById('interactionsRepostsCount'); if (iel) iel.textContent = d.reposts;
+          }
+          if (d.shares) {
+            const el = document.getElementById('metricSharesCount'); if (el) el.textContent = d.shares;
+            const iel = document.getElementById('interactionsSharesCount'); if (iel) iel.textContent = d.shares;
+          }
+          if (d.saves) {
+            const el = document.getElementById('metricSavesCount'); if (el) el.textContent = d.saves;
+            const iel = document.getElementById('interactionsSavesCount'); if (iel) iel.textContent = d.saves;
+          }
+          if (d.views) {
+            const el = document.getElementById('summaryViewsCount'); if (el) el.textContent = d.views;
+          }
+          if (d.viewers) {
+            const el = document.getElementById('summaryViewersCount'); if (el) el.textContent = d.viewers;
+          }
+          if (d.watchTime) {
+            const el = document.getElementById('summaryWatchTime'); if (el) el.textContent = d.watchTime;
+          }
+        }
+      } catch(e){}
+
+      // URL Query Parameter Initializer
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('tab')) {
+        switchTab(parseInt(urlParams.get('tab')), true);
+      }
+      if (urlParams.get('edit') === '0' || urlParams.get('preview') === '1') {
+        toggleEditMode(); // Turns OFF edit mode
+      }
+      if (urlParams.has('graph')) {
+        openGraphEditor(urlParams.get('graph'));
+      }
+      if (urlParams.has('menu')) {
+        toggleActionMenu();
+      }
+      if (urlParams.has('aud')) {
+        switchAudienceSubTab(urlParams.get('aud'));
+      }
+      if (urlParams.has('scroll')) {
+        const scrollVal = parseInt(urlParams.get('scroll'));
+        const scrollContainer = document.getElementById('scrollContainer');
+        if (scrollContainer) {
+          scrollContainer.scrollTop = scrollVal;
+        }
+      }
+
+      // Open link modal if ?link=1 or ?linkmodal=1 is in URL
+      if (urlParams.has('link') || urlParams.has('linkmodal')) {
+        openReelLinkModal();
+      }
+      // Auto fetch if ?fetch_url is provided in query
+      if (urlParams.has('fetch_url')) {
+        openReelLinkModal();
+        const input = document.getElementById('reelLinkUrlInput');
+        if (input) input.value = urlParams.get('fetch_url');
+        fetchReelFromUrl();
+      }
+      if (urlParams.has('preload_reel')) {
+        openReelLinkModal();
+        const code = urlParams.get('preload_reel');
+        const input = document.getElementById('reelLinkUrlInput');
+        if (input) input.value = `https://www.instagram.com/reels/${code}/`;
+        applyFetchedData(6, 0, "https://scontent.cdninstagram.com/v/t51.82787-15/913533031_18104296646369657_3458328763932494404_n.jpg?stp=cmp1_dst-jpg_e35_s640x640_tt6&_nc_cat=105&ccb=7-5&_nc_sid=18de74&efg=eyJlZmdfdGFnIjoiQ0xJUFMuYmVzdF9pbWFnZV91cmxnZW4uQzMifQ%3D%3D&_nc_ohc=oCAdX2uwCZsQ7kNvwGqIhTS&_nc_oc=AdozhvFKsMspNMtm6s4PZofYyJzqTdqTpufLGMdiAYG2kF0V_OUzFb2-fSHk94UCAgw&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&_nc_gid=cNjjKD5gDMDZVjRT5jvc8A&_nc_ss=7b60f&_nc_ct=RQosPBUKFQQAAAA&oh=00_AQTzMzqX4furnuOiGQrXxrQjLcIBHNhLzE3eI-OSmXNAIg&oe=6B07A607", code, "Live Instagram Engine");
+        if (urlParams.has('auto_apply')) {
+          applyReelDataToInsights();
+        }
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initInsightsApp);
+    } else {
+      initInsightsApp();
+    }
+
+    // =========================================================================
+    // FEATURE UPGRADES: CURVE PRESETS, HIDDEN ELEMENTS & AD MONETIZATION
+    // =========================================================================
+    let isAdPanelVisible = false;
+
+    // 1. Quick Curve Presets (Viral Surge, Strong Hook, Viral Hold, S-Curve, Late Boom, Normal Dropoff)
+    function applyCurvePreset(presetName) {
+      const cfg = graphConfigs[currentEditorGraph];
+      if (!cfg) return;
+
+      if (presetName === 'surge') {
+        // Viral Surge: Starts high, climbs or stays near 95%, smooth decline to 70%
+        editorPoints = [
+          { x: 0.02, y: 0.85 }, { x: 0.15, y: 0.98 }, { x: 0.30, y: 0.93 },
+          { x: 0.45, y: 0.89 }, { x: 0.60, y: 0.84 }, { x: 0.75, y: 0.78 },
+          { x: 0.88, y: 0.73 }, { x: 0.98, y: 0.70 }
+        ];
+        showToast('Applied Viral Surge preset 🚀');
+      } else if (presetName === 'hook') {
+        // Strong Hook: Flat high retention across initial seconds, then gentle slope
+        editorPoints = [
+          { x: 0.02, y: 0.99 }, { x: 0.15, y: 0.96 }, { x: 0.30, y: 0.91 },
+          { x: 0.45, y: 0.80 }, { x: 0.60, y: 0.68 }, { x: 0.75, y: 0.55 },
+          { x: 0.88, y: 0.48 }, { x: 0.98, y: 0.42 }
+        ];
+        showToast('Applied Strong Hook preset 🪝');
+      } else if (presetName === 'hold') {
+        // Viral Hold: Sustained high engagement across video
+        editorPoints = [
+          { x: 0.02, y: 0.98 }, { x: 0.15, y: 0.94 }, { x: 0.30, y: 0.92 },
+          { x: 0.45, y: 0.90 }, { x: 0.60, y: 0.89 }, { x: 0.75, y: 0.87 },
+          { x: 0.88, y: 0.85 }, { x: 0.98, y: 0.84 }
+        ];
+        showToast('Applied Viral Hold preset 🛡️');
+      } else if (presetName === 'scurve') {
+        // S-Curve: Sigmoidal decay
+        editorPoints = [
+          { x: 0.02, y: 0.98 }, { x: 0.18, y: 0.92 }, { x: 0.35, y: 0.76 },
+          { x: 0.50, y: 0.50 }, { x: 0.65, y: 0.28 }, { x: 0.82, y: 0.16 },
+          { x: 0.98, y: 0.12 }
+        ];
+        showToast('Applied S-Curve preset 〰️');
+      } else if (presetName === 'lateboom') {
+        // Late Boom: Low initial, huge peak at 70-80%
+        editorPoints = [
+          { x: 0.02, y: 0.28 }, { x: 0.20, y: 0.32 }, { x: 0.40, y: 0.38 },
+          { x: 0.60, y: 0.58 }, { x: 0.75, y: 0.96 }, { x: 0.88, y: 0.90 },
+          { x: 0.98, y: 0.78 }
+        ];
+        showToast('Applied Late Boom preset 💥');
+      } else if (presetName === 'dropoff') {
+        // Normal Dropoff: Standard natural decay
+        editorPoints = [
+          { x: 0.02, y: 0.98 }, { x: 0.15, y: 0.70 }, { x: 0.30, y: 0.48 },
+          { x: 0.45, y: 0.35 }, { x: 0.60, y: 0.26 }, { x: 0.75, y: 0.20 },
+          { x: 0.88, y: 0.15 }, { x: 0.98, y: 0.11 }
+        ];
+        showToast('Applied Normal Dropoff preset 📉');
+      }
+
+      activePointIdx = Math.min(activePointIdx, editorPoints.length - 1);
+      renderEditorCanvas();
+    }
+
+    // 2. Hidden Elements Manager & Modal
+    function openHiddenElementsModal() {
+      const modal = document.getElementById('hiddenElementsModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeHiddenElementsModal() {
+      const modal = document.getElementById('hiddenElementsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function toggleElementVisibility(elementId, isVisible) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        if (isVisible) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      }
+      try {
+        localStorage.setItem('hide_' + elementId, isVisible ? '1' : '0');
+      } catch(e){}
+    }
+
+    function toggleTypicalCurves(isVisible) {
+      const typViews = document.getElementById('typicalViewsLine');
+      const typRet = document.getElementById('typicalRetentionLine');
+      if (typViews) {
+        if (isVisible) typViews.classList.remove('hidden');
+        else typViews.classList.add('hidden');
+      }
+      if (typRet) {
+        if (isVisible) typRet.classList.remove('hidden');
+        else typRet.classList.add('hidden');
+      }
+      try {
+        localStorage.setItem('show_typical_curve', isVisible ? '1' : '0');
+      } catch(e){}
+    }
+
+    // 3. Monetization Ad Panel Toggle & Handlers
+    function toggleAdPanel(isVisible) {
+      isAdPanelVisible = isVisible;
+      const panel = document.getElementById('adBannerPanel');
+      const badge = document.getElementById('adPanelStatusBadge');
+      const chk = document.getElementById('chkShowAdPanel');
+
+      if (panel) {
+        if (isVisible) panel.classList.remove('hidden');
+        else panel.classList.add('hidden');
+      }
+      if (badge) {
+        badge.textContent = isVisible ? 'ACTIVE' : 'OFF';
+        badge.className = isVisible 
+          ? 'bg-amber-500 text-black font-bold px-2.5 py-1 rounded-full text-[11px]'
+          : 'bg-neutral-700 text-neutral-300 font-bold px-2.5 py-1 rounded-full text-[11px]';
+      }
+      if (chk) chk.checked = isVisible;
+      try {
+        localStorage.setItem('show_ad_panel', isVisible ? '1' : '0');
+      } catch(e){}
+    }
+
+    function handleAdClick() {
+      showToast('Ad clicked (Simulated Monetization Event)');
+    }
+
+    // 4. Header Title Click Handler (Un-locks controls if 3-dots are hidden)
+    function handleHeaderTitleClick() {
+      toggleActionMenu();
+    }
+
+    // 5. Clean Screenshot Mode
+    function enterCleanScreenshotMode() {
+      if (isEditMode) {
+        toggleEditMode(); // turns off edit mode
+      }
+      closeHiddenElementsModal();
+      toggleActionMenu();
+      showToast('Clean Screenshot Mode: Edit mode OFF. Tap Reel insights title anytime to open menu.');
+    }
+
+    // Restore saved hidden element preferences on boot
+    function initHiddenPreferences() {
+      try {
+        if (localStorage.getItem('hide_threeDotsBtn') === '0') {
+          toggleElementVisibility('threeDotsBtn', false);
+          const chk = document.getElementById('chkShowThreeDots');
+          if (chk) chk.checked = false;
+        }
+        if (localStorage.getItem('hide_trendIconHeader') === '0') {
+          toggleElementVisibility('trendIconHeader', false);
+          const chk = document.getElementById('chkShowTrendIcon');
+          if (chk) chk.checked = false;
+        }
+        if (localStorage.getItem('hide_boostReelSection') === '0') {
+          toggleElementVisibility('boostReelSection', false);
+          const chk = document.getElementById('chkShowBoostReel');
+          if (chk) chk.checked = false;
+        }
+        if (localStorage.getItem('hide_sourcesSection') === '0') {
+          toggleElementVisibility('sourcesSection', false);
+          const chk = document.getElementById('chkShowSources');
+          if (chk) chk.checked = false;
+        }
+        if (localStorage.getItem('show_typical_curve') === '1') {
+          toggleTypicalCurves(true);
+          const chk = document.getElementById('chkShowTypicalCurve');
+          if (chk) chk.checked = true;
+        }
+      } catch(e){}
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initHiddenPreferences);
+    } else {
+      initHiddenPreferences();
+    }
+
+  </script>
+</body>
+</html>
